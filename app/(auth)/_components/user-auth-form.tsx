@@ -17,9 +17,12 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import GithubSignInButton from './github-auth-button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' })
+  email: z.string().email({ message: '输入邮箱' }),
+  password: z.string().min(6, { message: '密码至少6位' }),
+  isRemind: z.boolean().optional()
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -58,22 +61,53 @@ export default function UserAuthForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>邮箱</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="Enter your email..."
+                    placeholder="输入邮箱"
                     disabled={loading}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>密码</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="输入密码"
+                    disabled={loading}
+                    {...field}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
 
-          <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Continue With Email
+          <FormField
+            control={form.control}
+            name="isRemind"
+            render={({ field }) => (
+              <FormItem className="  !mb-6 !mt-4 flex items-center  space-x-2 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="ml-3 mt-0   ">记住我</FormLabel>
+              </FormItem>
+            )}
+          />
+          <Button disabled={loading} className="mt-16  w-full" type="submit">
+            登录
           </Button>
         </form>
       </Form>
