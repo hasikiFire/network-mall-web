@@ -15,8 +15,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as z from 'zod';
-import GithubSignInButton from './github-auth-button';
+import * as z from 'zod'; 
 import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
@@ -32,7 +31,7 @@ export default function UserAuthForm() {
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: 'demo@gmail.com'
+    email: ''
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
