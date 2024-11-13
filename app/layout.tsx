@@ -1,31 +1,40 @@
-import "./globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import ThemeProvider from "@/components/layout/ThemeProvider";
-import { Sidebar } from "@/components/layout/Sidebar/Sidebar";
-import Header from "@/components/layout/Header/Header";
-import { Toaster } from "@/components/ui/toaster";
-
-const inter = Inter({ subsets: ["latin"] });
+import { auth } from '@/auth';
+import Providers from '@/components/layout/providers';
+import { Toaster } from '@/components/ui/sonner';
+import type { Metadata } from 'next';
+import { Lato } from 'next/font/google';
+import NextTopLoader from 'nextjs-toploader';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Next Shadcn",
-  description: "Basic dashboard with Next.js and Shadcn",
+  title: 'Next Shadcn',
+  description: 'Basic dashboard with Next.js and Shadcn'
 };
 
-export default function RootLayout({
-  children,
+const lato = Lato({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+  display: 'swap'
+});
+
+export default async function RootLayout({
+  children
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <html
+      lang="en"
+      className={`${lato.className}`}
+      suppressHydrationWarning={true}
+    >
+      <body className={'overflow-hidden'}>
+        <NextTopLoader showSpinner={false} />
+        <Providers session={session}>
           <Toaster />
-          <Header />
           {children}
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

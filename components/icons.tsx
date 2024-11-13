@@ -4,6 +4,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  CircuitBoardIcon,
   Command,
   CreditCard,
   File,
@@ -13,8 +14,10 @@ import {
   Laptop,
   LayoutDashboardIcon,
   Loader2,
+  LogIn,
   LucideIcon,
   LucideProps,
+  LucideShoppingBag,
   Moon,
   MoreVertical,
   Pizza,
@@ -24,21 +27,30 @@ import {
   Trash,
   Twitter,
   User,
-  X,
-} from "lucide-react";
+  UserCircle2Icon,
+  UserPen,
+  UserX2Icon,
+  X
+} from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
   dashboard: LayoutDashboardIcon,
   logo: Command,
+  login: LogIn,
   close: X,
+  product: LucideShoppingBag,
   spinner: Loader2,
+  kanban: CircuitBoardIcon,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
   trash: Trash,
+  employee: UserX2Icon,
   post: FileText,
   page: File,
+  userPen: UserPen,
+  user2: UserCircle2Icon,
   media: Image,
   settings: Settings,
   billing: CreditCard,
@@ -70,5 +82,5 @@ export const Icons = {
     </svg>
   ),
   twitter: Twitter,
-  check: Check,
+  check: Check
 };
