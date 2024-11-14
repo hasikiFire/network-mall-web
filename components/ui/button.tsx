@@ -3,7 +3,10 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
-
+export const btnSyle = {
+  backgroundCcolor: '#FFE53B',
+  backgroundImage: 'linear-gradient(147deg, #FFE53B 0%, #FF2525 74%);'
+};
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {

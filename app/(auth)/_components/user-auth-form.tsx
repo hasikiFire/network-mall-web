@@ -15,8 +15,9 @@ import { useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as z from 'zod'; 
+import * as z from 'zod';
 import { Checkbox } from '@/components/ui/checkbox';
+import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: '输入邮箱' }),
@@ -108,6 +109,20 @@ export default function UserAuthForm() {
           <Button disabled={loading} className="mt-16  w-full" type="submit">
             登录
           </Button>
+
+          <div className="mt-4 text-center">
+            <p className="text-gray-600">
+              还没有账号?{' '}
+              <Link href="/register">
+                <Button
+                  variant="link"
+                  className="text-blue-500 hover:underline"
+                >
+                  点击注册
+                </Button>
+              </Link>
+            </p>
+          </div>
         </form>
       </Form>
     </>
