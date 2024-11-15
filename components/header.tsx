@@ -6,7 +6,7 @@ const Header: React.FC = () => {
   return (
     <header className="header-bg flex items-center   justify-between p-4 px-20  text-white ">
       <div className="flex items-center space-x-4">
-        <h1 className="text-2xl font-bold text-red-900">Hasaki</h1>
+        <h1 className="text-2xl font-bold text-[#461A29]">Hasaki</h1>
         {/* <Link
           href="https://github.com"
           target="_blank"
@@ -17,7 +17,7 @@ const Header: React.FC = () => {
       </div>
       <div className="flex gap-4">
         <Button className="btn-primary  rounded-2xl px-10 py-4">登录</Button>
-        <Button className=" bg-white text-red-900 rounded-2xl px-10 py-4">注册</Button>
+        <Button className=" bg-white text-[#461A29] rounded-2xl px-10 py-4">注册</Button>
       </div>
     </header>
   );
