@@ -8,14 +8,18 @@
     #fdfdfd 93%
   ); */
 
-  background-color: #e4fafa;
+  /* background-color: #e4fafa;
   background-image: linear-gradient(
     157deg,
     #e4fafa 0%,
     #f1dcdc 36%,
     #f1dcdc 57%,
     #ffffff 88%
-  );
+  ); */
+
+  background-color: #e4fafa;
+  background-image: linear-gradient(166deg, #e4fafa 0%, #f1dcdc 37%, #f1dcdc 60%, #ffffff 91%);
+  
 }
 .btn-primary {
   background-color: #e97670;
