@@ -109,9 +109,10 @@ const PlanCardItem: React.FC<PlanCardProps> = ({
 
   return (
     <div
-      className={`relative flex  min-h-96 w-full min-w-60  max-w-xs flex-col rounded-xl bg-white p-6 pb-20   shadow-md transition-shadow duration-300   ${
-        isLast ? 'btn-primary text-white' : 'text-[#461A29]'
-      }`}
+      className={`relative flex  min-h-96 w-full min-w-60  max-w-xs flex-col rounded-xl 
+        bg-white p-6 pb-20   shadow-md transition-shadow duration-300 hover:shadow-xl  ${
+          isLast ? 'btn-primary text-white' : 'text-[#461A29]'
+        }`}
     >
       {/* {isPopular && (
         <span className="mb-2 block text-sm font-black  ">🌟 推荐</span>
