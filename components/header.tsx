@@ -1,8 +1,10 @@
 // components/Header.tsx
-import Link from 'next/link';
+'use client';
 import '@/style/base.css';
-import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 const Header: React.FC = () => {
+  const router = useRouter();
+
   return (
     <header className="header-bg flex items-center   justify-between p-4 px-20  text-white ">
       <div className="flex items-center space-x-4">
@@ -16,8 +18,18 @@ const Header: React.FC = () => {
         </Link> */}
       </div>
       <div className="flex gap-4">
-        <Button className="btn-primary  rounded-2xl px-10 py-4">登录</Button>
-        <Button className=" bg-white text-[#461A29] rounded-2xl px-10 py-4">注册</Button>
+        <div
+          className="bg btn-bg-primary  rounded-2xl px-12 py-5"
+          onClick={() => router.push('/login')}
+        >
+          登录
+        </div>
+        <div
+          className="rounded-2xl bg-white px-12 py-5 text-[#461A29]"
+          onClick={() => router.push('/register')}
+        >
+          注册
+        </div>
       </div>
     </header>
   );
