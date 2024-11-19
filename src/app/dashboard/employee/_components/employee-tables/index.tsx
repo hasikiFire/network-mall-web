@@ -5,7 +5,7 @@ import { DataTableFilterBox } from '@/components/ui/table/data-table-filter-box'
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
 import { Employee } from '@/constants/data';
-import { columns } from '../employee-tables/columns';
+import { columns } from './columns';
 import {
   GENDER_OPTIONS,
   useEmployeeTableFilters
