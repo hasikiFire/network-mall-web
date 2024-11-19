@@ -32,7 +32,8 @@ export default function UserAuthForm() {
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: ''
+    email: '',
+    password: ''
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -87,7 +88,7 @@ export default function UserAuthForm() {
                     disabled={loading}
                     {...field}
                   />
-                </FormControl>{' '}
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

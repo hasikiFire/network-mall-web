@@ -3,19 +3,19 @@ import { fakeProducts } from '@/constants/mock-api';
 import { searchParamsCache } from '@/lib/searchparams';
 import { DataTable as ProductTable } from '@/components/ui/table/data-table';
 import { columns } from './product-tables/columns';
+import { SearchParams } from 'nuqs/server';
 
-type ProductListingPage = {};
+type ProductListingPage = { searchParams: Promise<SearchParams> }; // Next.js 15+: async searchParams prop};
 
-export default async function ProductListingPage({}: ProductListingPage) {
-  // Showcasing the use of search params cache in nested RSCs
-  const page = searchParamsCache.get('page');
-  const search = searchParamsCache.get('q');
-  const pageLimit = searchParamsCache.get('limit');
-  const categories = searchParamsCache.get('categories');
+export default async function ProductListingPage({
+  searchParams
+}: ProductListingPage) {
+  const params = await searchParamsCache.parse(searchParams || {});
+  const { page, search, limit, categories } = params;
 
   const filters = {
     page,
-    limit: pageLimit,
+    limit: limit,
     ...(search && { search }),
     ...(categories && { categories: categories })
   };

@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -30,11 +31,13 @@ export default async function RootLayout({
       suppressHydrationWarning={true}
     >
       <body className={'overflow-hidden'}>
-        <NextTopLoader showSpinner={false} />
-        <Providers session={session}>
-          <Toaster />
-          {children}
-        </Providers>
+        <NuqsAdapter>
+          <NextTopLoader showSpinner={false} />
+          <Providers session={session}>
+            <Toaster />
+            {children}
+          </Providers>
+        </NuqsAdapter>
       </body>
     </html>
   );
