@@ -1,9 +1,9 @@
 import NextAuth, { DefaultSession } from 'next-auth';
 
 declare module 'next-auth' {
-  type UserSession = DefaultSession['user'];
+  type UserSession = User;
   interface Session {
-    user: UserSession;
+    user: User;
   }
 
   interface CredentialsInputs {

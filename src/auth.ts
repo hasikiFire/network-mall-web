@@ -1,7 +1,8 @@
 import NextAuth from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import 'next-auth/jwt';
-
+// 只在后端打印
+// fuck auth.js
 export const { auth, handlers, signOut, signIn } = NextAuth({
   providers: [
     CredentialProvider({
@@ -18,8 +19,10 @@ export const { auth, handlers, signOut, signIn } = NextAuth({
         const user = {
           id: '1',
           name: 'John',
-          email: credentials?.email as string
+          email: credentials?.email as string,
+          role: 'admin'
         };
+        console.log('authorize user: ', user);
         if (user) {
           // Any object returned will be saved in `user` property of the JWT
           return user;
@@ -60,15 +63,22 @@ export const { auth, handlers, signOut, signIn } = NextAuth({
     strategy: 'jwt'
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt(data) {
+      console.log('jwt data: ', data);
+      // 只在后端打印
+      const { token, user } = data;
       if (user?.token) {
         token.accessToken = user.token;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session(data) {
+      console.log('session data: ', data);
+      const { session, token } = data;
       if (token?.accessToken) {
         session.accessToken = token.accessToken;
+
+        // session.user.role = token.role;
       }
       return session;
     }
@@ -79,6 +89,11 @@ export const { auth, handlers, signOut, signIn } = NextAuth({
 declare module 'next-auth' {
   interface User {
     token?: string; // 这里添加 token 属性，注意标记为可选
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
   }
 
   // 如果你使用了数据库适配器，还需要扩展 AdapterUser 类型

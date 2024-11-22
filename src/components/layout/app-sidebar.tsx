@@ -29,7 +29,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { navItems } from '@/constants/data';
+import { adminNavItems, userNavItems } from '@/constants/data';
 import {
   BadgeCheck,
   Bell,
@@ -54,7 +54,9 @@ export const company = {
 export default function AppSidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
-
+  const navItems =
+    session?.user?.role === 'admin' ? adminNavItems : userNavItems;
+  console.log('session?.user: ', session?.user);
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>

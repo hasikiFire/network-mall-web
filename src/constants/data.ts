@@ -121,31 +121,39 @@ export type Product = {
   updated_at: string;
 };
 
-export const navItems: NavItem[] = [
+export const userNavItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: '首页',
     url: '/dashboard/overview',
     icon: 'dashboard',
     isActive: false,
     shortcut: ['d', 'd'],
     items: [] // Empty array as there are no child items for Dashboard
   },
+
   {
-    title: 'Employee',
-    url: '/dashboard/employee',
-    icon: 'user',
-    shortcut: ['e', 'e'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
-    title: 'Product',
+    title: '订阅中心',
     url: '/dashboard/product',
     icon: 'product',
     shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
   },
+  {
+    title: '使用记录',
+    url: '/dashboard/records',
+    icon: 'repeat',
+    shortcut: ['p', 'p'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: '账户',
+    url: '/dashboard/profile',
+    icon: 'billing',
+    isActive: true
+  },
+
   {
     title: 'Account',
     url: '#', // Placeholder as there is no direct link for the parent
@@ -166,13 +174,67 @@ export const navItems: NavItem[] = [
         icon: 'login'
       }
     ]
+  }
+];
+export const adminNavItems: NavItem[] = [
+  {
+    title: '首页',
+    url: '/dashboard/overview',
+    icon: 'dashboard',
+    isActive: false,
+    shortcut: ['d', 'd'],
+    items: [] // Empty array as there are no child items for Dashboard
   },
   {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
+    title: '用户管理',
+    url: '/dashboard/employee',
+    icon: 'user',
+    shortcut: ['e', 'e'],
     isActive: false,
     items: [] // No child items
+  },
+  {
+    title: '订阅中心',
+    url: '/dashboard/product',
+    icon: 'product',
+    shortcut: ['p', 'p'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: '账户',
+    icon: 'billing',
+    isActive: true,
+    url: '/dashboard/profile'
+  },
+
+  {
+    title: 'Account',
+    url: '#', // Placeholder as there is no direct link for the parent
+    icon: 'billing',
+    isActive: true,
+
+    items: [
+      {
+        title: 'Profile',
+        url: '/dashboard/profile',
+        icon: 'userPen',
+        shortcut: ['p', 'p']
+      },
+      {
+        title: 'Login',
+        shortcut: ['l', 'l'],
+        url: '/',
+        icon: 'login'
+      }
+    ]
   }
+  // {
+  //   title: 'Kanban',
+  //   url: '/dashboard/kanban',
+  //   icon: 'kanban',
+  //   shortcut: ['k', 'k'],
+  //   isActive: false,
+  //   items: [] // No child items
+  // }
 ];

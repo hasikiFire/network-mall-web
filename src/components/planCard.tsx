@@ -149,7 +149,6 @@ const PlanCardItem: React.FC<PlanCardProps> = ({
   isPopular = false,
   isLast
 }) => {
-  console.log('isLast: ', isLast);
   // 计算根据周期调整的价格
   const adjustedPrice =
     period === 'annually'

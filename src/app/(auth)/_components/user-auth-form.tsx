@@ -32,7 +32,7 @@ export default function UserAuthForm() {
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: '',
+    email: '123@qq.com',
     password: ''
   };
   const form = useForm<UserFormValue>({

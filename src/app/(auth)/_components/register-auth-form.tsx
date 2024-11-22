@@ -40,7 +40,7 @@ export default function UserAuthForm() {
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: ''
+    email: '123@qq.com'
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
