@@ -176,7 +176,6 @@ export default function AppSidebar() {
 }
 
 const NetSidebarMenu = ({ navItems }: { navItems: NavItem[] }) => {
-  console.log('NetSidebarMenu navItems: ', navItems);
   const pathname = usePathname();
   return (
     <SidebarMenu>
