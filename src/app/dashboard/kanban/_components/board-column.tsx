@@ -1,4 +1,4 @@
-import { Task } from '@/lib/store';
+import { Task } from '@/store/store';
 import { useDndContext, type UniqueIdentifier } from '@dnd-kit/core';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';

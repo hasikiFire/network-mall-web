@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-import { useTaskStore } from '@/lib/store';
+import { useTaskStore } from '@/store/store';
 
 export default function NewTaskDialog() {
   const addTask = useTaskStore((state) => state.addTask);

@@ -121,21 +121,27 @@ export type Product = {
   updated_at: string;
 };
 
-export const userNavItems: NavItem[] = [
+export const homeNavItems: NavItem[] = [
   {
     title: '首页',
     url: '/dashboard/overview',
     icon: 'dashboard',
     isActive: false,
-    shortcut: ['d', 'd'],
     items: [] // Empty array as there are no child items for Dashboard
   },
+  {
+    title: '商店',
+    url: '/dashboard/store',
+    icon: 'billing',
+    isActive: true
+  }
+];
 
+export const storeNavItems: NavItem[] = [
   {
     title: '订阅中心',
-    url: '/dashboard/product',
+    url: '/dashboard/subscribe',
     icon: 'product',
-    shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
   },
@@ -143,98 +149,61 @@ export const userNavItems: NavItem[] = [
     title: '使用记录',
     url: '/dashboard/records',
     icon: 'repeat',
-    shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
   },
+
   {
-    title: '账户',
+    title: '我的钱包',
     url: '/dashboard/profile',
     icon: 'billing',
     isActive: true
   },
 
   {
-    title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
+    title: '账单',
+    url: '/dashboard/billing',
     icon: 'billing',
-    isActive: true,
-
-    items: [
-      {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: 'userPen',
-        shortcut: ['p', 'p']
-      },
-      {
-        title: 'Login',
-        shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login'
-      }
-    ]
+    isActive: true
   }
 ];
-export const adminNavItems: NavItem[] = [
+export const managerNavItems: NavItem[] = [
   {
-    title: '首页',
-    url: '/dashboard/overview',
-    icon: 'dashboard',
+    title: '服务器管理',
+    url: '/manager/server',
+    icon: 'user',
     isActive: false,
-    shortcut: ['d', 'd'],
-    items: [] // Empty array as there are no child items for Dashboard
+    items: [] // No child items
   },
   {
     title: '用户管理',
-    url: '/dashboard/employee',
+    url: '/manager/user',
     icon: 'user',
-    shortcut: ['e', 'e'],
     isActive: false,
     items: [] // No child items
   },
   {
-    title: '订阅中心',
-    url: '/dashboard/product',
-    icon: 'product',
-    shortcut: ['p', 'p'],
+    title: '套餐管理',
+    url: '/manager/pacakage',
+    icon: 'user',
     isActive: false,
     items: [] // No child items
-  },
-  {
-    title: '账户',
-    icon: 'billing',
-    isActive: true,
-    url: '/dashboard/profile'
-  },
-
-  {
-    title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
-    icon: 'billing',
-    isActive: true,
-
-    items: [
-      {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: 'userPen',
-        shortcut: ['p', 'p']
-      },
-      {
-        title: 'Login',
-        shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login'
-      }
-    ]
   }
-  // {
-  //   title: 'Kanban',
-  //   url: '/dashboard/kanban',
-  //   icon: 'kanban',
-  //   shortcut: ['k', 'k'],
-  //   isActive: false,
-  //   items: [] // No child items
-  // }
+];
+
+export const useNavItems: NavItem[] = [
+  {
+    title: '使用教程',
+    url: '/dashboard/tutorial',
+    icon: 'user',
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: '安全审计',
+    url: '/dashboard/detect',
+    icon: 'user',
+    isActive: false,
+    items: [] // No child items
+  }
 ];

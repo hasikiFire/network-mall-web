@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useTaskStore } from '@/lib/store';
+import { useTaskStore } from '@/store/store';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';

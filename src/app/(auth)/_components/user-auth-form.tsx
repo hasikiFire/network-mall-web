@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const formSchema = z.object({
   email: z.string().email({ message: '邮箱格式不对' }),
@@ -28,6 +29,7 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const login = useAuthStore((state) => state.login);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
@@ -42,6 +44,9 @@ export default function UserAuthForm() {
 
   const onSubmit = async (data: UserFormValue) => {
     startTransition(() => {
+      const userData = { email: data.email, role: 'admin', name: 'user1' }; // 示例数据
+      login(userData);
+
       signIn('credentials', {
         email: data.email,
         callbackUrl: callbackUrl ?? '/dashboard'

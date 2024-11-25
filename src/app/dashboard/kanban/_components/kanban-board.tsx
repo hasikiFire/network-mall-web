@@ -1,7 +1,7 @@
 'use client';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Task, useTaskStore } from '@/lib/store';
+import { Task, useTaskStore } from '@/store/store';
 import { hasDraggableData } from '@/lib/utils';
 import {
   Announcements,
