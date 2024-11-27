@@ -2,17 +2,23 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
 
-interface PlanCardProps {
+interface PlanCardItemProps {
+  plan: IPlanItem;
+  isLast: boolean;
+  home?: boolean;
+  period: string;
+}
+export interface IPlanItem {
+  id: number;
   title: string;
   basePrice: number; // 这里是月付基础价格
   features: string[];
-  buttonText: string;
-  period: string; // 用来显示当前选择的周期
   isPopular?: boolean;
-  isLast: boolean;
 }
-const planCard: React.FC = () => {
+const planCard: React.FC = ({ home = false }: { home?: boolean }) => {
   const periodOptions = [
     {
       value: 'monthly',
@@ -27,8 +33,9 @@ const planCard: React.FC = () => {
       label: '年付'
     }
   ];
-  const list = [
+  const list: IPlanItem[] = [
     {
+      id: 1,
       title: '基础套餐',
       basePrice: 10, // 月付基础价格
       features: [
@@ -42,10 +49,10 @@ const planCard: React.FC = () => {
         '有限售后技术支持',
         '支持流媒体解锁，但不承诺高可用性',
         '仅限账户本人使用，不支持团队使用'
-      ],
-      buttonText: '购买'
+      ]
     },
     {
+      id: 2,
       title: '高级套餐',
       basePrice: 20,
       features: [
@@ -60,10 +67,11 @@ const planCard: React.FC = () => {
         '支持流媒体解锁，但不承诺高可用性',
         '仅限账户本人使用，不支持团队使用'
       ],
-      buttonText: '购买',
+
       isPopular: true
     },
     {
+      id: 3,
       title: '专业套餐',
       basePrice: 30,
       features: [
@@ -77,8 +85,7 @@ const planCard: React.FC = () => {
         '有限售后技术支持',
         '支持流媒体解锁，但不承诺高可用性',
         '仅限账户本人使用，不支持团队使用'
-      ],
-      buttonText: '购买'
+      ]
     }
   ];
 
@@ -127,28 +134,22 @@ const planCard: React.FC = () => {
         {list.map((plan, index) => (
           <PlanCardItem
             key={index}
-            title={plan.title}
-            basePrice={plan.basePrice}
-            features={plan.features}
-            buttonText={plan.buttonText}
             period={period}
-            isPopular={plan.isPopular}
+            plan={plan}
             isLast={index === list.length - 1}
+            home={home}
           />
         ))}
       </div>
     </div>
   );
 };
-const PlanCardItem: React.FC<PlanCardProps> = ({
-  title,
-  basePrice,
-  features,
-  buttonText,
-  period,
-  isPopular = false,
-  isLast
+const PlanCardItem: React.FC<PlanCardItemProps> = ({
+  plan,
+  isLast,
+  period
 }) => {
+  const { title, basePrice, features } = plan;
   // 计算根据周期调整的价格
   const adjustedPrice =
     period === 'annually'
@@ -156,6 +157,17 @@ const PlanCardItem: React.FC<PlanCardProps> = ({
       : period === 'quarterly'
       ? basePrice * 3
       : basePrice;
+
+  const router = useRouter();
+
+  const isLogin = useAuthStore((state) => state.isLogin);
+  const onBuy = () => {
+    if (!isLogin) {
+      router.push('/login');
+      return;
+    }
+    router.push(`/dashboard/order?id=${plan.id}`);
+  };
 
   return (
     <div
@@ -232,8 +244,9 @@ const PlanCardItem: React.FC<PlanCardProps> = ({
           className={` w-full  rounded-3xl  py-6 text-lg font-bold  text-white hover:text-white ${
             isLast ? 'bg-white text-[#F67F82] ' : 'btn-bg-primary'
           } `}
+          onClick={onBuy}
         >
-          {buttonText}
+          购买
         </Button>
       </div>
     </div>

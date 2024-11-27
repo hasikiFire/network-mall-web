@@ -1,6 +1,6 @@
 // components/Header.tsx
 'use client';
-import '@/style/base.css';
+
 import { useRouter } from 'next/navigation';
 const Header: React.FC = () => {
   const router = useRouter();
