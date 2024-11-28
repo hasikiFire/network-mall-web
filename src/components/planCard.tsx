@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
+import { IPlanItem, mockplanList } from '@/utils/mock';
 
 interface PlanCardItemProps {
   plan: IPlanItem;
@@ -11,13 +12,7 @@ interface PlanCardItemProps {
   home?: boolean;
   period: string;
 }
-export interface IPlanItem {
-  id: number;
-  title: string;
-  basePrice: number; // 这里是月付基础价格
-  features: string[];
-  isPopular?: boolean;
-}
+
 const planCard: React.FC = ({ home = false }: { home?: boolean }) => {
   const periodOptions = [
     {
@@ -33,61 +28,7 @@ const planCard: React.FC = ({ home = false }: { home?: boolean }) => {
       label: '年付'
     }
   ];
-  const list: IPlanItem[] = [
-    {
-      id: 1,
-      title: '基础套餐',
-      basePrice: 10, // 月付基础价格
-      features: [
-        '可用流量：200 G/月',
-        '套餐时长：90 天',
-        '在线IP：3 个',
-        '在线连接数：300',
-        '峰值带宽：200 Mbps',
-        '可用节点：15 个',
-        '网络稳定指数：⭐️',
-        '有限售后技术支持',
-        '支持流媒体解锁，但不承诺高可用性',
-        '仅限账户本人使用，不支持团队使用'
-      ]
-    },
-    {
-      id: 2,
-      title: '高级套餐',
-      basePrice: 20,
-      features: [
-        '可用流量：200 G/月',
-        '套餐时长：90 天',
-        '在线IP：3 个',
-        '在线连接数：300',
-        '峰值带宽：200 Mbps',
-        '可用节点：15 个',
-        '网络稳定指数：⭐️',
-        '有限售后技术支持',
-        '支持流媒体解锁，但不承诺高可用性',
-        '仅限账户本人使用，不支持团队使用'
-      ],
-
-      isPopular: true
-    },
-    {
-      id: 3,
-      title: '专业套餐',
-      basePrice: 30,
-      features: [
-        '可用流量：200 G/月',
-        '套餐时长：90 天',
-        '在线IP：3 个',
-        '在线连接数：300',
-        '峰值带宽：200 Mbps',
-        '可用节点：15 个',
-        '网络稳定指数：⭐️',
-        '有限售后技术支持',
-        '支持流媒体解锁，但不承诺高可用性',
-        '仅限账户本人使用，不支持团队使用'
-      ]
-    }
-  ];
+  const list: IPlanItem[] = mockplanList;
 
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(
     'monthly'

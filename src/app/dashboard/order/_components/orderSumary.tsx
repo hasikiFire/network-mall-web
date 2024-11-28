@@ -20,7 +20,7 @@ const OrderSumary: React.FC = (props: ISumaryProps) => {
   };
 
   return (
-    <Card className='w-80'>
+    <Card>
       <CardHeader>订单总计</CardHeader>
       <CardContent>
         <div className="mb-2 flex justify-between">

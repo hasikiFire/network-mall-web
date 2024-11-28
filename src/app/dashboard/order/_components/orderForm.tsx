@@ -15,7 +15,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { mockplanList, mockMonthOptions, payOptions } from '@/utils/mock';
 
 // 定义表单验证规则
 const formSchema = z.object({
@@ -43,7 +45,7 @@ export function OrderForm() {
     defaultValues: {
       plan: 'basic',
       traffic: 50,
-      onlineIPs: 1,
+      onlineIPs: 3,
       duration: '1month',
       payment: 'alipay'
     }
@@ -55,28 +57,61 @@ export function OrderForm() {
 
   return (
     <Card>
+      <CardHeader className="text-2xl font-bold">选择订阅计划</CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-8">
             {/* 订阅计划 */}
             <FormField
               control={form.control}
               name="plan"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>订阅计划</FormLabel>
-                  <FormControl>
+                <FormItem className="flex  space-y-0">
+                  <FormLabel className="mr-6 w-28">订阅计划</FormLabel>
+                  <FormControl className="mt-0  ">
                     <RadioGroup
-                      className="mt-2 flex space-x-4"
                       onValueChange={field.onChange}
-                      value={field.value}
+                      defaultValue={field.value}
+                      className="flex  gap-4 flex-wrap"
                     >
-                      <RadioGroupItem value="basic" />
-                      <span>基础版</span>
-                      <RadioGroupItem value="premium" />
-                      <span>高级版</span>
-                      <RadioGroupItem value="pro" />
-                      <span>专业版</span>
+                      {mockplanList.map((v) => (
+                        <FormItem
+                          className="flex items-center  space-y-0"
+                          key={v.id}
+                        >
+                          <FormControl>
+                            <RadioGroupItem
+                              value={`${v.id}`}
+                              className="  hidden"
+                            ></RadioGroupItem>
+                          </FormControl>
+                          <FormLabel className="!  font-normal">
+                            <div
+                              className={`flex w-52 flex-col flex-wrap items-center rounded-md border p-4 ${
+                                field.value === String(v.id)
+                                  ? 'border-primary  bg-primary-foreground  text-primary   '
+                                  : ''
+                              }`}
+                            >
+                              <div
+                                className={`  mb-4  rounded-2xl  border-white   px-4  py-2  ${
+                                  field.value === String(v.id)
+                                    ? ' bg-primary text-white '
+                                    : ' '
+                                }`}
+                              >
+                                {v.title}
+                              </div>
+                              <div>
+                                <span className="mr-2  inline-block text-4xl font-bold text-amber-500">
+                                  {v.basePrice}
+                                </span>
+                                <span className="text-base">元/月</span>
+                              </div>
+                            </div>
+                          </FormLabel>
+                        </FormItem>
+                      ))}
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -89,9 +124,9 @@ export function OrderForm() {
               control={form.control}
               name="traffic"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>可用流量 (GB)</FormLabel>
-                  <FormControl>
+                <FormItem className="flex space-y-0">
+                  <FormLabel className="mr-6 w-28">可用流量 (GB)</FormLabel>
+                  <FormControl className="mt-0">
                     <Slider
                       value={[field.value]}
                       onValueChange={(value) => field.onChange(value[0])}
@@ -109,9 +144,9 @@ export function OrderForm() {
               control={form.control}
               name="onlineIPs"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>在线 IP 数</FormLabel>
-                  <FormControl>
+                <FormItem className="flex space-y-0">
+                  <FormLabel className="mr-6 w-28">在线 IP 数</FormLabel>
+                  <FormControl className="mt-0 w-28">
                     <Input
                       type="number"
                       min={1}
@@ -130,20 +165,38 @@ export function OrderForm() {
               control={form.control}
               name="duration"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>购买时长</FormLabel>
-                  <FormControl>
+                <FormItem className="flex space-y-0">
+                  <FormLabel className="mr-6 w-28">购买时长</FormLabel>
+                  <FormControl className="mt-0 ">
                     <RadioGroup
-                      className="mt-2 flex space-x-4"
                       onValueChange={field.onChange}
-                      value={field.value}
+                      defaultValue={field.value}
+                      className="flex gap-4 flex-wrap"
                     >
-                      <RadioGroupItem value="1month" />
-                      <span>1 个月</span>
-                      <RadioGroupItem value="6months" />
-                      <span>6 个月</span>
-                      <RadioGroupItem value="1year" />
-                      <span>1 年</span>
+                      {mockMonthOptions.map((v) => (
+                        <FormItem
+                          className="flex flex-wrap  items-center space-y-0"
+                          key={v.value}
+                        >
+                          <FormControl>
+                            <RadioGroupItem
+                              value={`${v.value}`}
+                              className="hidden"
+                            ></RadioGroupItem>
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            <div
+                              className={`flex w-52 flex-col flex-wrap items-center rounded-md border p-4 ${
+                                field.value === String(v.value)
+                                  ? 'border-primary  bg-primary-foreground  text-primary   '
+                                  : ''
+                              }`}
+                            >
+                              {v.label}
+                            </div>
+                          </FormLabel>
+                        </FormItem>
+                      ))}
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -156,18 +209,38 @@ export function OrderForm() {
               control={form.control}
               name="payment"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>支付方式</FormLabel>
-                  <FormControl>
+                <FormItem className="flex space-y-0">
+                  <FormLabel className="mr-6 w-28">支付方式</FormLabel>
+                  <FormControl className="mt-0">
                     <RadioGroup
-                      className="mt-2 flex space-x-4"
                       onValueChange={field.onChange}
-                      value={field.value}
+                      defaultValue={field.value}
+                      className="flex gap-4 flex-wrap"
                     >
-                      <RadioGroupItem value="alipay" />
-                      <span>支付宝</span>
-                      <RadioGroupItem value="wechat" />
-                      <span>微信支付</span>
+                      {payOptions.map((v) => (
+                        <FormItem
+                          className="flex items-center  gap-4 space-y-0 "
+                          key={v.value}
+                        >
+                          <FormControl>
+                            <RadioGroupItem
+                              value={`${v.value}`}
+                              className="hidden"
+                            ></RadioGroupItem>
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            <div
+                              className={`flex w-52 flex-col items-center rounded-md border p-4 ${
+                                field.value === String(v.value)
+                                  ? 'border-primary  bg-primary-foreground  text-primary   '
+                                  : ''
+                              }`}
+                            >
+                              {v.label}
+                            </div>
+                          </FormLabel>
+                        </FormItem>
+                      ))}
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -175,9 +248,9 @@ export function OrderForm() {
               )}
             />
 
-            <Button type="submit" className="w-full">
+            {/* <Button type="submit" className="w-full">
               提交订单
-            </Button>
+            </Button> */}
           </form>
         </Form>
       </CardContent>
