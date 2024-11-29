@@ -63,11 +63,11 @@ export function OrderForm() {
               control={form.control}
               name="plan"
               render={({ field }) => (
-                <FormItem className="flex  space-y-0">
-                  <FormLabel className="mr-6 w-28 text-gray-600">
+                <FormItem className="flex space-y-0">
+                  <FormLabel className="  w-28 text-gray-600">
                     订阅计划
                   </FormLabel>
-                  <FormControl className="   ">
+                  <FormControl className="flex-1">
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -75,7 +75,7 @@ export function OrderForm() {
                     >
                       {mockplanList.map((v) => (
                         <FormItem
-                          className="flex items-center  space-y-0"
+                          className="flex cursor-pointer items-center  space-y-0"
                           key={v.id}
                         >
                           <FormControl>
@@ -86,17 +86,15 @@ export function OrderForm() {
                           </FormControl>
                           <FormLabel className=" ">
                             <div
-                              className={`flex w-52 flex-col flex-wrap items-center rounded-md border p-4 ${
+                              className={`flex w-52  cursor-pointer flex-col flex-wrap items-center rounded-md border p-4 hover:bg-primary-foreground ${
                                 field.value === String(v.id)
                                   ? 'border-primary  bg-primary-foreground  text-primary   '
                                   : ''
                               }`}
                             >
                               <div
-                                className={`mb-4  rounded-2xl  border-white   px-4  py-2  ${
-                                  field.value === String(v.id)
-                                    ? 'bg-primary text-white '
-                                    : ''
+                                className={`mb-2  rounded-2xl  border-white   px-4  py-2  ${
+                                  field.value === String(v.id) ? '   ' : ''
                                 }`}
                               >
                                 {v.title}
@@ -124,10 +122,10 @@ export function OrderForm() {
               name="duration"
               render={({ field }) => (
                 <FormItem className="flex space-y-0">
-                  <FormLabel className="mr-6 w-28 text-gray-600">
+                  <FormLabel className="  w-28 text-gray-600">
                     购买时长
                   </FormLabel>
-                  <FormControl>
+                  <FormControl className="flex-1">
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={String(field.value)}
@@ -146,7 +144,7 @@ export function OrderForm() {
                           </FormControl>
                           <FormLabel className="font-normal">
                             <div
-                              className={`flex w-52 flex-col flex-wrap items-center rounded-md border p-4 ${
+                              className={`flex w-52 cursor-pointer flex-col  flex-wrap items-center rounded-md border p-4 hover:bg-primary-foreground   ${
                                 String(field.value) === String(v.value)
                                   ? 'border-primary  bg-primary-foreground  text-primary   '
                                   : ''
@@ -169,7 +167,7 @@ export function OrderForm() {
               name="traffic"
               render={({ field }) => (
                 <FormItem className="flex space-y-0">
-                  <FormLabel className="mr-6 w-28 text-gray-600">
+                  <FormLabel className="  w-28 text-gray-600">
                     可用流量 (GB)
                   </FormLabel>
                   <FormControl>
@@ -192,7 +190,7 @@ export function OrderForm() {
               name="onlineIPs"
               render={({ field }) => (
                 <FormItem className="flex space-y-0">
-                  <FormLabel className="mr-6 w-28 text-gray-600">
+                  <FormLabel className="  w-28 text-gray-600">
                     在线 IP 数(个)
                   </FormLabel>
                   <FormControl>
