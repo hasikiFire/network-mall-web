@@ -59,6 +59,13 @@ export const mockMonthOptions = [
 ];
 
 export const payOptions = [
-  { label: '支付宝', value: 'al' },
-  { label: '微信', value: 'wx' }
+  { label: '支付宝', value: 'alipay' },
+  { label: '微信', value: 'wxpay' }
 ];
+
+export const planConfig = {
+  onlineIPStatus: true,
+  onlineIPRange: [3, 6],
+  trafficStatus: true,
+  payment: ['wxpay', 'alipay']
+};
