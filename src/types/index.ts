@@ -33,3 +33,13 @@ export interface FooterItem {
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
+
+export interface IOption<T> {
+  label: string;
+  value: T;
+}
+
+export interface IOption<T> {
+  label: string;
+  value: T;
+}

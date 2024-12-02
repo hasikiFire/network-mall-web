@@ -13,10 +13,10 @@ import {
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { mockplanList, mockMonthOptions } from '@/utils/mock';
 import { NumberInput } from '@/components/NumberInput';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { usePlanStore } from '@/store/usePlanStore';
 
 // 定义表单验证规则
 const formSchema = z.object({
@@ -37,21 +37,30 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function OrderForm() {
   const { formData, setData } = useOrderStore();
+  const { planList, monthOptions } = usePlanStore();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: formData
   });
+  const [_, forceRender] = useState(0);
+
+  const plan = form.watch('plan');
 
   // 使用 useEffect 监听表单变化
   useEffect(() => {
     const subscription = form.watch((values) => {
-      // 将表单变化实时同步到 Zustand store
       setData(values);
-      console.log('values: ', values);
     });
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅
   }, [form.watch]);
 
+  useEffect(() => {
+    const planDetail = planList?.find((v) => String(v.id) === plan);
+    if (!planDetail?.traffic) return;
+    form.setValue('traffic', planDetail?.traffic); 
+  }, [plan]);
+
+  // const onPlanChange = (v) => {};
   return (
     <Card>
       <CardHeader className="text-2xl font-bold">选择订阅计划</CardHeader>
@@ -73,7 +82,7 @@ export function OrderForm() {
                       defaultValue={field.value}
                       className="flex  flex-wrap gap-4"
                     >
-                      {mockplanList.map((v) => (
+                      {planList?.map((v) => (
                         <FormItem
                           className="flex cursor-pointer items-center  space-y-0"
                           key={v.id}
@@ -86,7 +95,7 @@ export function OrderForm() {
                           </FormControl>
                           <FormLabel className=" ">
                             <div
-                              className={`flex w-52  cursor-pointer flex-col flex-wrap items-center rounded-md border p-4 hover:bg-primary-foreground ${
+                              className={`flex w-52 cursor-pointer  flex-col flex-wrap items-center rounded-md border p-4 shadow-md hover:bg-primary-foreground ${
                                 field.value === String(v.id)
                                   ? 'border-primary  bg-primary-foreground  text-primary   '
                                   : ''
@@ -131,7 +140,7 @@ export function OrderForm() {
                       defaultValue={String(field.value)}
                       className="flex flex-wrap gap-4"
                     >
-                      {mockMonthOptions.map((v) => (
+                      {monthOptions.map((v) => (
                         <FormItem
                           className="flex flex-wrap  items-center space-y-0"
                           key={v.value}
@@ -144,7 +153,7 @@ export function OrderForm() {
                           </FormControl>
                           <FormLabel className="font-normal">
                             <div
-                              className={`flex w-52 cursor-pointer flex-col  flex-wrap items-center rounded-md border p-4 hover:bg-primary-foreground   ${
+                              className={`flex w-52 cursor-pointer  flex-col flex-wrap  items-center rounded-md border p-4 shadow-md hover:bg-primary-foreground   ${
                                 String(field.value) === String(v.value)
                                   ? 'border-primary  bg-primary-foreground  text-primary   '
                                   : ''

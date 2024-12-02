@@ -5,11 +5,10 @@ import {
   CardFooter,
   CardHeader
 } from '@/components/ui/card';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import wxIcon from '@/style/image/wx.svg';
 import alippayIcon from '@/style/image/alippay.svg';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { payOptions } from '@/utils/mock';
 import Image from 'next/image';
 import { useOrderStore } from '@/store/useOrderStore';
 import { Modal } from '@/components/ui/modal';
@@ -27,6 +26,8 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import Tag from '@/components/ui/tag';
+import { usePlanStore } from '@/store/usePlanStore';
 
 const FormSchema = z.object({
   promotionCode: z.string({
@@ -34,21 +35,60 @@ const FormSchema = z.object({
   })
 });
 
-// export interface ISumaryProps {
-//   field: any;
-// }
+export interface ISumary {
+  countFee: number;
+  orderFee: number;
+  disCountFee: number;
+  total: number;
+}
 const OrderSumary = () => {
   const { formData, setData } = useOrderStore();
+  const { planList, planConfig, payOptions } = usePlanStore();
   const [isOpen, setIsOpen] = useState(false);
   // TODO 计算
-  const [summary, setSummary] = useState({
-    subtotal: 80.96,
-    discount: 16.19,
-    deliveryFee: 0.0,
-    tax: 14.0,
-    total: 78.76,
-    promotionCode: ''
+  const [summary, setSummary] = useState<ISumary>({
+    countFee: 0,
+    orderFee: 0,
+    disCountFee: 0,
+    total: 0
   });
+  const [promotionData, setPromotionData] = useState({
+    code: '',
+    discount: 0
+  });
+
+  useEffect(() => {
+    if (!formData) return;
+    const planDetail = planList?.find((v) => String(v.id) === formData?.plan);
+    if (!planDetail) {
+      return;
+    }
+
+    let curTotal = planDetail.basePrice * formData.duration!;
+    console.log(' 1 curTotal: ', curTotal);
+    if (planConfig.IPConfigable && formData.onlineIPs && planDetail.ipLimit) {
+      curTotal +=
+        planConfig.IPPrice * (formData.onlineIPs - planDetail.ipLimit);
+    }
+
+    if (planConfig?.trafficConfigable && formData.traffic) {
+      curTotal +=
+        planConfig.trafficPrice * (formData.traffic - planDetail.traffic);
+    }
+    const tempOrderFee = curTotal;
+    let tempDisCount = 0;
+    if (promotionData.code) {
+      tempDisCount = curTotal * promotionData.discount;
+    }
+    curTotal -= tempDisCount;
+
+    setSummary((pre) => ({
+      ...pre,
+      disCountFee: tempDisCount,
+      orderFee: tempOrderFee,
+      total: curTotal
+    }));
+  }, [formData, planList, promotionData]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -58,19 +98,24 @@ const OrderSumary = () => {
   });
 
   const onChange = (v: string) => {
-    console.log('onChange v: ', v);
     setData({ payment: v });
   };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    // TODO
+    // TODO check code
     setIsOpen(false);
-    setSummary((pre) => ({
-      ...pre,
-      promotionCode: data.promotionCode
-    }));
+    setPromotionData({
+      code: data.promotionCode,
+      discount: 0.2
+    });
   };
 
+  const handleDelete = () => {
+    setPromotionData({
+      code: '',
+      discount: 0
+    });
+  };
   return (
     <div>
       <Card>
@@ -81,34 +126,40 @@ const OrderSumary = () => {
           <div className="mb-2 flex justify-between">
             <span className="text-gray-600">账户余额</span>
             <span className="text-lg text-amber-500">
-              ￥{summary.subtotal.toFixed(2)}
+              ￥{summary.countFee.toFixed(2)}
             </span>
           </div>
 
           <div className="mb-2 flex justify-between">
             <span className="text-gray-600">订单金额</span>
             <span className="text-lg text-amber-500">
-              ￥{summary.deliveryFee.toFixed(2)}
+              ￥{summary.orderFee.toFixed(2)}
             </span>
           </div>
           <div className="mb-2 flex justify-between">
             <div className="flex text-gray-600">
-              <div>优惠金额</div>
-              <Button
-                className="ml-1 h-6 px-2 text-xs"
-                onClick={() => setIsOpen(true)}
-              >
-                使用优惠码
-              </Button>
-              <span>{summary.promotionCode}</span>
+              <div className="mr-1">优惠金额</div>
+              {promotionData.code ? (
+                <Tag
+                  label={`优惠码:${promotionData.code}`}
+                  onDelete={() => handleDelete()}
+                />
+              ) : (
+                <Button
+                  className="ml-1 h-6 px-2 text-xs"
+                  onClick={() => setIsOpen(true)}
+                >
+                  使用优惠码
+                </Button>
+              )}
             </div>
             <span className="text-lg text-amber-500">
-              -￥{summary.discount.toFixed(2)}
+              -￥{summary.disCountFee.toFixed(2)}
             </span>
           </div>
           <div className="mt-4 flex justify-between  border-t py-4 text-lg ">
-            <span className="text-gray-600">总计</span>
-            <span className="text-lg text-amber-500">
+            <span className="font-bold text-gray-600">总计</span>
+            <span className="text-lg font-bold text-amber-500">
               ￥{summary.total.toFixed(2)}
             </span>
           </div>

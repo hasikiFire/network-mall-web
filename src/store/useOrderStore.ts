@@ -13,7 +13,7 @@ export interface IOrderItem {
   plan: string;
   traffic: number;
   onlineIPs?: number;
-  duration?: number;
+  duration: number;
   payment: string;
 }
 const mockDefaultValue = {

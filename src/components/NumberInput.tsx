@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from './ui/button';
 import { cx } from 'class-variance-authority';
@@ -21,6 +21,10 @@ export function NumberInput({
   onChange
 }: NumberInputProps) {
   const [internalValue, setInternalValue] = useState(value);
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
 
   const handleDecrease = () => {
     const newValue = Math.max(min, internalValue - step);
