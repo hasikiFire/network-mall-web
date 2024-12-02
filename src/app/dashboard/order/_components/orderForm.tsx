@@ -36,7 +36,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function OrderForm() {
-  const { formData, setData } = useOrderStore();
+  const { formData, setOrderData } = useOrderStore();
   const { planList, monthOptions } = usePlanStore();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -49,7 +49,7 @@ export function OrderForm() {
   // 使用 useEffect 监听表单变化
   useEffect(() => {
     const subscription = form.watch((values) => {
-      setData(values);
+      setOrderData(values);
     });
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅
   }, [form.watch]);

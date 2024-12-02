@@ -34,7 +34,18 @@ export default async function RootLayout({
         <NuqsAdapter>
           <NextTopLoader showSpinner={false} />
           <Providers session={session}>
-            <Toaster />
+            <Toaster
+              toastOptions={{
+                style: {
+                  position: 'fixed', // 确保它是固定的
+                  top: '50%', // 距离顶部 50%
+                  left: '50%', // 距离左侧 50%
+                  transform: 'translate(-50%, -50%)', // 精确居中
+                  zIndex: 9999, // 确保它在其他内容之上
+                  height: 'fit-content'
+                }
+              }}
+            />
             {children}
           </Providers>
         </NuqsAdapter>

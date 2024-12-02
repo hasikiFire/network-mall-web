@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { IPlanItem, mockplanList } from '@/utils/mock';
+import { IPlanItem, mockplanList } from '@/lib/mock';
 
 interface PlanCardItemProps {
   plan: IPlanItem;

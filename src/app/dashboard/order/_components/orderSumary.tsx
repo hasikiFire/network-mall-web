@@ -15,7 +15,7 @@ import { Modal } from '@/components/ui/modal';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
+import Decimal from 'decimal.js';
 import {
   Form,
   FormControl,
@@ -28,6 +28,9 @@ import {
 import { Input } from '@/components/ui/input';
 import Tag from '@/components/ui/tag';
 import { usePlanStore } from '@/store/usePlanStore';
+import { useTheme } from 'next-themes';
+import { toast } from 'sonner';
+import Loading from '@/components/loaindg';
 
 const FormSchema = z.object({
   promotionCode: z.string({
@@ -42,8 +45,10 @@ export interface ISumary {
   total: number;
 }
 const OrderSumary = () => {
-  const { formData, setData } = useOrderStore();
+  const { formData, setOrderData } = useOrderStore();
   const { planList, planConfig, payOptions } = usePlanStore();
+  const { theme } = useTheme();
+
   const [isOpen, setIsOpen] = useState(false);
   const [summary, setSummary] = useState<ISumary>({
     countFee: 0,
@@ -55,6 +60,7 @@ const OrderSumary = () => {
     code: '',
     discount: 0
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!formData) return;
@@ -63,29 +69,39 @@ const OrderSumary = () => {
       return;
     }
 
-    let curTotal = planDetail.basePrice * formData.duration!;
-    console.log(' 1 curTotal: ', curTotal);
+    // 使用 Decimal 来进行高精度计算
+    let curTotal = new Decimal(planDetail.basePrice).mul(formData.duration);
     if (planConfig.IPConfigable && formData.onlineIPs && planDetail.ipLimit) {
-      curTotal +=
-        planConfig.IPPrice * (formData.onlineIPs - planDetail.ipLimit);
+      curTotal = curTotal.add(
+        new Decimal(planConfig.IPPrice).mul(
+          formData.onlineIPs - planDetail.ipLimit
+        )
+      );
     }
 
     if (planConfig?.trafficConfigable && formData.traffic) {
-      curTotal +=
-        planConfig.trafficPrice * (formData.traffic - planDetail.traffic);
+      curTotal = curTotal.add(
+        new Decimal(planConfig.trafficPrice).mul(
+          formData.traffic - planDetail.traffic
+        )
+      );
     }
-    const tempOrderFee = curTotal;
+    const tempfee = curTotal.toNumber();
+
+    // 处理折扣
     let tempDisCount = 0;
     if (promotionData.code) {
-      tempDisCount = curTotal * promotionData.discount;
+      tempDisCount = curTotal
+        .mul(new Decimal(1 - promotionData.discount))
+        .toNumber();
     }
-    curTotal -= tempDisCount;
+    curTotal = curTotal.sub(tempDisCount);
 
     setSummary((pre) => ({
       ...pre,
       disCountFee: tempDisCount,
-      orderFee: tempOrderFee,
-      total: curTotal
+      orderFee: tempfee,
+      total: curTotal.toNumber()
     }));
   }, [formData, planList, promotionData]);
 
@@ -97,7 +113,7 @@ const OrderSumary = () => {
   });
 
   const onChange = (v: string) => {
-    setData({ payment: v });
+    setOrderData({ payment: v });
   };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
@@ -105,7 +121,7 @@ const OrderSumary = () => {
     setIsOpen(false);
     setPromotionData({
       code: data.promotionCode,
-      discount: 0.2
+      discount: 0.88
     });
   };
 
@@ -115,6 +131,19 @@ const OrderSumary = () => {
       discount: 0
     });
   };
+
+  const onPay = () => {
+    setLoading(true);
+    setTimeout(() => {
+      toast.success('支付成功', {
+        richColors: true,
+        className: 'text-lg',
+        duration: 2000
+      });
+      setLoading(false);
+    }, 2000);
+  };
+
   return (
     <div>
       <Card>
@@ -140,7 +169,9 @@ const OrderSumary = () => {
               <div className="mr-1">优惠金额</div>
               {promotionData.code ? (
                 <Tag
-                  label={`优惠码:${promotionData.code}`}
+                  label={`${promotionData.code}(${
+                    promotionData.discount * 10
+                  }折)`}
                   onDelete={() => handleDelete()}
                 />
               ) : (
@@ -153,7 +184,7 @@ const OrderSumary = () => {
               )}
             </div>
             <span className="text-lg text-amber-500">
-              -￥{summary.disCountFee.toFixed(2)}
+              {`-￥${summary.disCountFee.toFixed(2)}`}
             </span>
           </div>
           <div className="mt-4 flex justify-between  border-t py-4 text-lg ">
@@ -180,7 +211,7 @@ const OrderSumary = () => {
                 key={v.value}
                 onClick={() => onChange(v.value)}
               >
-                <div className={`flex items-center justify-center text-xl`}>
+                <div className={`flex items-center justify-center text-lg`}>
                   <RadioGroupItem value={`${v.value}`}></RadioGroupItem>
                   <div className="ml-3">{v.label}</div>
                 </div>
@@ -197,6 +228,7 @@ const OrderSumary = () => {
           <Button
             className="h-12 w-full bg-orange-500 hover:bg-orange-400"
             variant="default"
+            onClick={onPay}
           >
             立即支付
           </Button>
@@ -233,6 +265,8 @@ const OrderSumary = () => {
           </form>
         </Form>
       </Modal>
+      <Loading loading={loading} />
+      {/* 居中显示通知 */}
     </div>
   );
 };

@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type Actions = {
-  setData: (data: Partial<IOrderItem>) => void;
+  setOrderData: (data: Partial<IOrderItem>) => void;
   reset: () => void;
 };
 export type State = {
-  formData?: Partial<IOrderItem>;
+  formData?: IOrderItem;
 };
 
 export interface IOrderItem {
@@ -30,7 +30,7 @@ export const useOrderStore = create<State & Actions>()(
 
       reset: () => set(() => ({ formData: undefined })),
 
-      setData: (data: Partial<IOrderItem>) =>
+      setOrderData: (data: Partial<IOrderItem>) =>
         set((state) => ({ formData: { ...state.formData, ...data } }))
     }),
     { name: 'order-store' }

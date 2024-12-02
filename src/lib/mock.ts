@@ -10,7 +10,7 @@ export const mockplanList = [
   {
     id: 1,
     title: '基础套餐',
-    basePrice: 10, // 月付基础价格
+    basePrice: 9.9, // 月付基础价格
     traffic: 50,
     ipLimit: 3,
     features: [
@@ -25,7 +25,7 @@ export const mockplanList = [
   {
     id: 2,
     title: '高级套餐',
-    basePrice: 20,
+    basePrice: 19.9,
     traffic: 200,
     ipLimit: 3,
     features: [
@@ -42,7 +42,7 @@ export const mockplanList = [
   {
     id: 3,
     title: '专业套餐',
-    basePrice: 30,
+    basePrice: 29.9,
     traffic: 300,
     ipLimit: 3,
     features: [

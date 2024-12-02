@@ -1,10 +1,10 @@
 import { IOption } from '@/types';
-import { mockplanList } from '@/utils/mock';
+import { mockplanList } from '@/lib/mock';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type Actions = {
-  setData: (data: IPlanItem[]) => void;
+  setPlanData: (data: IPlanItem[]) => void;
   reset: () => void;
 };
 
@@ -75,7 +75,7 @@ export const usePlanStore = create<State & Actions>()(
 
       reset: () => set(() => ({ planList: undefined })),
 
-      setData: (data: IPlanItem[]) =>
+      setPlanData: (data: IPlanItem[]) =>
         set((state) => ({ planList: { ...state.planList, ...data } }))
     }),
     { name: 'plan-store' }
