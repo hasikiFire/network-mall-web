@@ -265,7 +265,7 @@ const OrderSumary = () => {
           </form>
         </Form>
       </Modal>
-      <Loading loading={loading} />
+      <Loading loading={loading} title="正在支付..." />
       {/* 居中显示通知 */}
     </div>
   );
