@@ -45,7 +45,6 @@ const OrderSumary = () => {
   const { formData, setData } = useOrderStore();
   const { planList, planConfig, payOptions } = usePlanStore();
   const [isOpen, setIsOpen] = useState(false);
-  // TODO 计算
   const [summary, setSummary] = useState<ISumary>({
     countFee: 0,
     orderFee: 0,

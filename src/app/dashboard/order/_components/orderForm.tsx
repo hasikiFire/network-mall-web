@@ -181,8 +181,8 @@ export function OrderForm() {
                   </FormLabel>
                   <FormControl>
                     <NumberInput
-                      min={50}
-                      max={600}
+                      min={formData?.traffic}
+                      max={2000}
                       step={10}
                       {...field}
                       className="w-52"

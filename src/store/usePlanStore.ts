@@ -49,7 +49,7 @@ export const defaultPlanConfig = {
   IPConfigable: true,
   IPRange: [3, 6],
   trafficConfigable: true,
-  trafficPrice: 5,
+  trafficPrice: 0.5,
   payment: ['wxpay', 'alipay'],
   IPPrice: 10,
   ipLimit: 3
