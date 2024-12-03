@@ -12,6 +12,7 @@ import { addDays, format } from 'date-fns';
 import * as React from 'react';
 import { DateRange } from 'react-day-picker';
 
+import { zhCN } from 'date-fns/locale'; // 引入中文语言包
 export function CalendarDateRangePicker({
   className
 }: React.HTMLAttributes<HTMLDivElement>) {
@@ -28,7 +29,7 @@ export function CalendarDateRangePicker({
             id="date"
             variant={'outline'}
             className={cn(
-              'w-[260px] justify-start text-left font-normal',
+              'w-[300px] justify-start text-left font-normal',
               !date && 'text-muted-foreground'
             )}
           >
@@ -36,11 +37,11 @@ export function CalendarDateRangePicker({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, 'LLL dd, y')} -{' '}
-                  {format(date.to, 'LLL dd, y')}
+                  {format(date.from, 'yyyy年MM月dd日', { locale: zhCN })} -{' '}
+                  {format(date.to, 'yyyy年MM月dd日', { locale: zhCN })}
                 </>
               ) : (
-                format(date.from, 'LLL dd, y')
+                format(date.from, 'yyyy年MM月dd日', { locale: zhCN })
               )
             ) : (
               <span>Pick a date</span>

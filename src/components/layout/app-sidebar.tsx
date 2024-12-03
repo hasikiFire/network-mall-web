@@ -223,8 +223,14 @@ const NetSidebarMenu = ({ navItems }: { navItems: NavItem[] }) => {
               asChild
               tooltip={item.title}
               isActive={pathname === item.url}
+              // className={pathname === item.url ? '!bg-primary  ' : ''}
             >
-              <Link href={item.url}>
+              <Link
+                href={item.url}
+                className={
+                  pathname === item.url ? '!bg-primary-foreground  !text-primary' : ''
+                }
+              >
                 <Icon />
                 <span>{item.title}</span>
               </Link>
