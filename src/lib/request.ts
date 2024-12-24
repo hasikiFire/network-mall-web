@@ -1,7 +1,7 @@
 // Request.ts
 import { getToken } from 'next-auth/jwt';
 import { getCookie } from './cookie';
-
+import axios, { AxiosHeaders, AxiosRequestConfig } from 'axios';
 // 定义请求选项的类型
 interface RequestOptions extends RequestInit {
   headers?: Record<string, string>;
@@ -25,8 +25,8 @@ class Request {
 
   // 生成请求选项
   private async getRequestOptions(
-    options: RequestOptions = {}
-  ): Promise<RequestOptions> {
+    options: AxiosRequestConfig = {}
+  ): Promise<AxiosRequestConfig> {
     const token = await getCookie('accessToken');
 
     return {
@@ -42,20 +42,20 @@ class Request {
   // 通用请求方法
   public async request<T>(
     endpoint: string,
-    options: RequestOptions = {}
+    options: AxiosRequestConfig = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     const requestOptions = await this.getRequestOptions(options);
 
     try {
-      const response = await fetch(url, requestOptions);
+      const response = await axios(url, requestOptions);
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (response.status !== 200) {
+        const errorData = await response.data();
         throw new Error(errorData.message || 'Request failed');
       }
 
-      const data = (await response.json()) as T;
+      const data = (await response.data()) as T;
       return {
         data,
         status: response.status
@@ -80,35 +80,15 @@ class Request {
   // POST 请求
   public post<T>(
     endpoint: string,
-    body: Record<string, any>,
-    options?: RequestOptions
+    body?: Record<string, any>,
+    options?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: JSON.stringify(body),
+
+      data: JSON.stringify(body),
       ...options
     });
-  }
-
-  // PUT 请求
-  public put<T>(
-    endpoint: string,
-    body: Record<string, any>,
-    options?: RequestOptions
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-      ...options
-    });
-  }
-
-  // DELETE 请求
-  public delete<T>(
-    endpoint: string,
-    options?: RequestOptions
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { method: 'DELETE', ...options });
   }
 }
 

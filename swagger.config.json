@@ -1,0 +1,8 @@
+{
+  "docsUrl": "www.example.com",
+  "includeTags": [],
+  "excludeTags": ["bot-callback-controller"],
+  "axiosInstanceUrl": "@/lib/request",
+  "prefix": "",
+  "vueUseAxios": false
+}
