@@ -18,14 +18,16 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import Service from './service';
+import useCountdown from '@/hooks/useCountdown';
 
 const formSchema = z
   .object({
     name: z.string().min(1, { message: '请输入昵称' }),
     email: z.string().email({ message: '邮箱格式不对' }),
     password: z.string().min(6, { message: '密码至少6位' }),
-    passwordConfirm: z.string().min(6, { message: '两次输入的密码不一致' })
-
+    passwordConfirm: z.string().min(6, { message: '两次输入的密码不一致' }),
+    code: z.string().min(1, { message: '请输入验证码' })
     // isRemind: z.boolean().optional()
   })
   .refine((data) => data.password === data.passwordConfirm, {
@@ -36,6 +38,8 @@ const formSchema = z
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const service = new Service();
+  const { countdown, isCounting, startCountdown } = useCountdown(60);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
@@ -48,14 +52,33 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(() => {
-      // TODO
-      // signIn('credentials', {
-      //   email: data.email,
-      //   callbackUrl: callbackUrl ?? '/dashboard'
-      // });
-      // toast.success('Signed In Successfully!');
+    startTransition(async () => {
+      try {
+        await service.register({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          velCode: data.code
+        });
+        toast.success('注册成功!!!');
+        // TODO 路由到登录页面
+        // signIn('credentials', {
+        //   email: data.email,
+        //   callbackUrl: callbackUrl ?? '/dashboard'
+        // });
+      } catch (e) {
+        console.error(e);
+      }
     });
+  };
+
+  const handleSendCode = async () => {
+    await service.getEmailCode({
+      email: form.getValues('email'),
+      type: 'REGISTER'
+    });
+    startCountdown();
+    toast.success('发送成功');
   };
 
   return (
@@ -101,6 +124,34 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>验证码</FormLabel>
+                <FormControl>
+                  <div className="flex">
+                    <Input
+                      type="code"
+                      placeholder="输入验证码"
+                      disabled={loading}
+                      {...field}
+                      className="flex-1"
+                    />
+                    <Button
+                      className="ml-2 text-sm "
+                      onClick={handleSendCode}
+                      disabled={isCounting || loading}
+                    >
+                      {isCounting ? `重新发送(${countdown}s)` : '发送验证码'}
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />{' '}
           <FormField
             control={form.control}
             name="password"

@@ -1,98 +1,83 @@
 // Request.ts
-import { getToken } from 'next-auth/jwt';
-import { getCookie } from './cookie';
-import axios, { AxiosHeaders, AxiosRequestConfig } from 'axios';
-// 定义请求选项的类型
-interface RequestOptions extends RequestInit {
-  headers?: Record<string, string>;
-}
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosRequestHeaders
+} from 'axios';
+import { toast } from 'sonner';
 
 // 定义响应数据的类型（可扩展）
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message?: string;
-}
 
-class Request {
-  private baseURL: string;
-  private token: string | null;
+const instance = axios.create({
+  timeout: 30 * 1000
+});
+const handleInvalidToken = () => {
+  toast.error('登录信息过期, 请重新登录');
+  localStorage.removeItem('access_token');
+  // TODO
+  // gotoLogin();
+};
 
-  constructor(baseURL?: string) {
-    this.baseURL = baseURL || process.env.API_BASE_URL || ''; // 从环境变量中获取域名
-    this.token = null;
+// 请求拦截
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('access_token');
+    config.headers = {
+      Authorization: `Bearer ${token}`,
+      token: `${token}`,
+      'access-token': `${token}`,
+
+      ...config.headers
+    } as unknown as AxiosRequestHeaders;
+    config.url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${config.url}`;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  // 生成请求选项
-  private async getRequestOptions(
-    options: AxiosRequestConfig = {}
-  ): Promise<AxiosRequestConfig> {
-    const token = await getCookie('accessToken');
-
-    return {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-        ...options.headers // 合并自定义 headers
-      },
-      ...options
-    };
-  }
-
-  // 通用请求方法
-  public async request<T>(
-    endpoint: string,
-    options: AxiosRequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}${endpoint}`;
-    const requestOptions = await this.getRequestOptions(options);
-
-    try {
-      const response = await axios(url, requestOptions);
-
-      if (response.status !== 200) {
-        const errorData = await response.data();
-        throw new Error(errorData.message || 'Request failed');
+// 响应拦截
+instance.interceptors.response.use(
+  (res) => {
+    if (
+      res.data.code !== undefined &&
+      res.data.code !== 0 &&
+      res.data.code !== 200 &&
+      !(res.config as AxiosRequestConfig & { skipErrorHandler?: boolean })
+        .skipErrorHandler
+    ) {
+      if ((res.data.msg || res.data.message).includes('无效用户')) {
+        handleInvalidToken();
+        return Promise.reject(res.data);
+      } else {
+        toast.error(res.data.msg || res.data.message);
+        return Promise.reject(res.data);
       }
-
-      const data = (await response.data()) as T;
-      return {
-        data,
-        status: response.status
-      };
-    } catch (error) {
-      console.error('Fetch error:', error);
-      throw error;
     }
+    return Promise.resolve(res.data);
+  },
+  (error: AxiosError<{ code: number; message?: string; msg?: string }>) => {
+    const skipErrorHandler = (
+      error.config as AxiosRequestConfig & { skipErrorHandler?: boolean }
+    ).skipErrorHandler;
+    if (error.response?.status === 401 && !skipErrorHandler) {
+      handleInvalidToken();
+      return;
+    }
+    if (!skipErrorHandler) {
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.msg ||
+          error.message
+      );
+    }
+    return Promise.reject(error);
   }
+);
 
-  // GET 请求
-  public get<T>(
-    endpoint: string,
-    params?: Record<string, any>
-  ): Promise<ApiResponse<T>> {
-    const queryString = params
-      ? `?${new URLSearchParams(params).toString()}`
-      : '';
-    return this.request<T>(`${endpoint}${queryString}`, { method: 'GET' });
-  }
+type Request = <T = unknown>(
+  config: AxiosRequestConfig & { skipErrorHandler?: boolean }
+) => Promise<T>;
 
-  // POST 请求
-  public post<T>(
-    endpoint: string,
-    body?: Record<string, any>,
-    options?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, {
-      method: 'POST',
-
-      data: JSON.stringify(body),
-      ...options
-    });
-  }
-}
-
-// 创建全局实例
-const request = new Request();
-
-export default request;
+export const request = instance.request as Request;
