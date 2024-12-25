@@ -10,6 +10,11 @@ function useCountdown(initialTime: number) {
     setIsCounting(true);
   }, [isCounting, initialTime]);
 
+  const stopCountdown = useCallback(() => {
+    setCountdown(0);
+    setIsCounting(false);
+  }, []);
+
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
     if (isCounting && countdown > 0) {
@@ -24,7 +29,7 @@ function useCountdown(initialTime: number) {
     };
   }, [countdown, isCounting]);
 
-  return { countdown, isCounting, startCountdown };
+  return { countdown, isCounting, startCountdown, stopCountdown };
 }
 
 export default useCountdown;

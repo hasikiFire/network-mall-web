@@ -12,60 +12,57 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import Service from './service';
 import useCountdown from '@/hooks/useCountdown';
+import { EyeOff, Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-const formSchema = z
-  .object({
-    name: z.string().min(1, { message: '请输入昵称' }),
-    email: z.string().email({ message: '邮箱格式不对' }),
-    password: z.string().min(6, { message: '密码至少6位' }),
-    passwordConfirm: z.string().min(6, { message: '两次输入的密码不一致' }),
-    code: z.string().min(1, { message: '请输入验证码' })
-    // isRemind: z.boolean().optional()
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    message: '两次输入的密码不一致',
-    path: ['passwordConfirm'] // 指定错误信息出现在 passwordConfirm 字段
-  });
+const formSchema = z.object({
+  // name: z.string().min(1, { message: '请输入昵称' }),
+  email: z.string().email({ message: '邮箱格式不对' }),
+  password: z.string().min(6, { message: '密码至少6位' }),
+  code: z.string().min(1, { message: '请输入验证码' })
+});
 
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
   const service = new Service();
-  const { countdown, isCounting, startCountdown } = useCountdown(60);
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
+  const { countdown, isCounting, startCountdown, stopCountdown } =
+    useCountdown(60);
   const [loading, startTransition] = useTransition();
-  const defaultValues = {
-    email: '123@qq.com'
-  };
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
-    defaultValues
+    defaultValues: {
+      // name: '',
+      email: '',
+      password: '',
+      code: ''
+    }
   });
 
   const onSubmit = async (data: UserFormValue) => {
+    console.log('onSubmit data: ', data);
+
     startTransition(async () => {
       try {
         await service.register({
-          name: data.name,
+          // name: data.name,
           email: data.email,
           password: data.password,
           velCode: data.code
         });
         toast.success('注册成功!!!');
-        // TODO 路由到登录页面
-        // signIn('credentials', {
-        //   email: data.email,
-        //   callbackUrl: callbackUrl ?? '/dashboard'
-        // });
+        setTimeout(() => {
+          router.push(`/login?email=${data.email}`);
+        });
       } catch (e) {
         console.error(e);
       }
@@ -73,12 +70,31 @@ export default function UserAuthForm() {
   };
 
   const handleSendCode = async () => {
-    await service.getEmailCode({
-      email: form.getValues('email'),
-      type: 'REGISTER'
-    });
+    // 使用 zod 的 safeParse 方法同步验证邮箱格式
+    const email = form.getValues('email');
+    const result = formSchema.pick({ email: true }).safeParse({ email });
+
+    if (!result.success) {
+      // 如果验证失败，获取并显示错误信息
+      const emailError = result.error.errors.find((e) => e.path[0] === 'email');
+      if (emailError) {
+        toast.error(emailError.message); // 显示错误消息
+      }
+      return;
+    }
+
     startCountdown();
-    toast.success('发送成功');
+    startTransition(async () => {
+      try {
+        await service.getEmailCode({
+          email: form.getValues('email'),
+          type: 'REGISTER'
+        });
+        toast.success('发送成功');
+      } catch (e) {
+        stopCountdown();
+      }
+    });
   };
 
   return (
@@ -86,14 +102,14 @@ export default function UserAuthForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-2"
+          className="w-full space-y-3"
         >
-          <FormField
+          {/* <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>昵称</FormLabel>
+                <FormLabel required>昵称</FormLabel>
                 <FormControl>
                   <Input
                     type="name"
@@ -101,17 +117,17 @@ export default function UserAuthForm() {
                     disabled={loading}
                     {...field}
                   />
-                </FormControl>{' '}
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>邮箱</FormLabel>
+                <FormLabel required>邮箱</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -119,7 +135,7 @@ export default function UserAuthForm() {
                     disabled={loading}
                     {...field}
                   />
-                </FormControl>{' '}
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -129,17 +145,17 @@ export default function UserAuthForm() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>验证码</FormLabel>
+                <FormLabel required>验证码</FormLabel>
                 <FormControl>
                   <div className="flex">
                     <Input
-                      type="code"
                       placeholder="输入验证码"
                       disabled={loading}
                       {...field}
                       className="flex-1"
                     />
                     <Button
+                      type="button" // 明确指定按钮类型为普通按钮
                       className="ml-2 text-sm "
                       onClick={handleSendCode}
                       disabled={isCounting || loading}
@@ -151,58 +167,54 @@ export default function UserAuthForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />{' '}
+          />
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>密码</FormLabel>
+                <FormLabel required>密码</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="输入密码"
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>{' '}
+                  <div className="flex">
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="输入密码"
+                      disabled={loading}
+                      {...field}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="   flex items-center px-3  "
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </div>
+                </FormControl>
                 <FormMessage />
                 <div className="mb-2 text-xs text-gray-400">
                   密码由6位以上字符组成
                 </div>
               </FormItem>
             )}
-          />{' '}
-          <FormField
-            control={form.control}
-            name="passwordConfirm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>确认密码</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="输入密码"
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>{' '}
-                <FormMessage />
-              </FormItem>
-            )}
           />
-          <Button disabled={loading} className="mt-16  w-full" type="submit">
+
+          <Button disabled={loading} className="w-full" type="submit">
             注册
           </Button>
           <div className="mt-4 text-center">
-            <p className="text-gray-600">
-              已有账户?{' '}
-              <Link href="/login">
-                <Button variant="link" className="  hover:underline">
-                  点击登录
-                </Button>
+            <div className="text-gray-600">
+              已有账户?
+              <Link href="/login" className="text-blue-600 hover:underline">
+                点击登录
               </Link>
-            </p>
+            </div>
           </div>
         </form>
       </Form>

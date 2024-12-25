@@ -19,6 +19,7 @@ import * as z from 'zod';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
+import Service from './service';
 
 const formSchema = z.object({
   email: z.string().email({ message: '邮箱格式不对' }),
@@ -30,11 +31,12 @@ type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
   const login = useAuthStore((state) => state.login);
+  const service = new Service();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: '123@qq.com',
+    email: searchParams.get('email') || '',
     password: ''
   };
   const form = useForm<UserFormValue>({
@@ -43,15 +45,25 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(() => {
-      const userData = { email: data.email, role: 'admin', name: 'user1' }; // 示例数据
-      login(userData);
+    startTransition(async () => {
+      try {
+        await service.login({
+          email: data.email,
+          password: data.password
+        });
+        login({
+          email: data.email,
+          password: data.password
+        });
+        toast.success('登录成功!');
 
-      signIn('credentials', {
-        email: data.email,
-        callbackUrl: callbackUrl ?? '/dashboard'
-      });
-      toast.success('Signed In Successfully!');
+        signIn('credentials', {
+          email: data.email,
+          callbackUrl: callbackUrl ?? '/dashboard'
+        });
+      } catch (e) {
+        console.error(e);
+      }
     });
   };
 
