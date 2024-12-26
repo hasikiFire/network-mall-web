@@ -1,11 +1,3 @@
-export interface IPlanItem {
-  id: number;
-  title: string;
-  basePrice: number; // 这里是月付基础价格
-  features: string[];
-  isPopular?: boolean;
-}
-
 export const mockplanList = [
   {
     id: 1,

@@ -11,13 +11,11 @@ import { DeepRequired } from 'react-hook-form';
  * 查询可用的套餐列表
  * /package/getList
  */
-export function getPackageGetList(params: GetPackageGetListParams) {
+export function getPackageGetList(params: PageReqDto) {
   return request<DeepRequired<RestRespPageRespDtoPackageListRespDto>>({
     url: `/package/getList`,
     method: 'GET',
-    params: {
-      ...params.params
-    }
+    params
   });
 }
 

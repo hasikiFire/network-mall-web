@@ -1,10 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { IPlanItem, mockplanList } from '@/lib/mock';
+import { IPlanItem, usePlanStore } from '@/store/usePlanStore';
+import { getPackageGetList } from '@/api';
 
 interface PlanCardItemProps {
   plan: IPlanItem;
@@ -13,7 +14,12 @@ interface PlanCardItemProps {
   period: string;
 }
 
-const planCard: React.FC = ({ home = false }: { home?: boolean }) => {
+interface PlanCardProps {
+  planList: IPlanItem[];
+  home?: boolean;
+}
+
+const planCard: React.FC<PlanCardProps> = ({ planList, home = false }) => {
   const periodOptions = [
     {
       value: 'monthly',
@@ -28,7 +34,11 @@ const planCard: React.FC = ({ home = false }: { home?: boolean }) => {
       label: '年付'
     }
   ];
-  const list: IPlanItem[] = mockplanList;
+  const initializePlanList = usePlanStore((state) => state.initializePlanList);
+
+  useEffect(() => {
+    initializePlanList(planList);
+  }, [planList]);
 
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(
     'monthly'
@@ -72,12 +82,12 @@ const planCard: React.FC = ({ home = false }: { home?: boolean }) => {
         </div>
       </div>
       <div className="flex justify-center gap-8">
-        {list.map((plan, index) => (
+        {planList?.map((plan, index) => (
           <PlanCardItem
             key={index}
             period={period}
             plan={plan}
-            isLast={index === list.length - 1}
+            isLast={index === planList.length - 1}
             home={home}
           />
         ))}

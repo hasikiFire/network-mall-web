@@ -2,10 +2,13 @@ import { IOption } from '@/types';
 import { mockplanList } from '@/lib/mock';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getPackageGetList } from '@/api';
 
 export type Actions = {
   setPlanData: (data: IPlanItem[]) => void;
   reset: () => void;
+  getPlanData: () => void;
+  initializePlanList: (data: IPlanItem[]) => void;
 };
 
 export type State = {
@@ -68,7 +71,7 @@ export interface IPlanItem {
 export const usePlanStore = create<State & Actions>()(
   persist(
     (set) => ({
-      planList: mockplanList,
+      planList: [],
       planConfig: defaultPlanConfig,
       monthOptions: defaultMonthOptions,
       payOptions: defaultPayOptions,
@@ -76,7 +79,24 @@ export const usePlanStore = create<State & Actions>()(
       reset: () => set(() => ({ planList: undefined })),
 
       setPlanData: (data: IPlanItem[]) =>
-        set((state) => ({ planList: { ...state.planList, ...data } }))
+        set((state) => ({ planList: { ...state.planList, ...data } })),
+      setPlanConfig: (data: IPlanConfig) =>
+        set((state) => ({ planConfig: { ...state.planConfig, ...data } })),
+      getPlanData: async () => {
+        const res = await getPackageGetList({ fetchAll: true });
+        const tempList = res.data.list.map((item) => {
+          return {
+            id: item.id,
+            title: item.packageName,
+            basePrice: item.salePrice,
+            features: [item.packageDesc],
+            ipLimit: item.deviceLimit,
+            traffic: item.dataAllowance
+          };
+        });
+        set(() => ({ planList: tempList }));
+      },
+      initializePlanList: (data: IPlanItem[]) => set(() => ({ planList: data }))
     }),
     { name: 'plan-store' }
   )
