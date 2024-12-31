@@ -1,36 +1,38 @@
-import { getPackageGetList } from '@/api';
 import Header from '@/components/header';
 import PlanCard from '@/components/planCard';
-import { IPlanItem } from '@/store/usePlanStore';
+import { IPlanItem, usePlanStore } from '@/store/usePlanStore';
+import { serverFetch } from '@/lib/serverFetch';
 
-// 在页面组件中使用 getServerSideProps 获取数据并初始化 Zustand store
-export async function getServerSideProps() {
-  const res = await getPackageGetList({ fetchAll: true });
-  const planList = res.data.list.map((item) => ({
-    id: item.id,
-    title: item.packageName,
-    basePrice: item.salePrice,
-    features: [item.packageDesc],
-    ipLimit: item.deviceLimit,
-    traffic: item.dataAllowance
-  }));
+async function fetchPlanList(): Promise<IPlanItem[]> {
+  try {
+    const data = await serverFetch<any>('/package/getList?fetchAll=true');
 
-  return {
-    props: {
-      planList: planList
+    if (!data?.data?.list || !Array.isArray(data.data.list)) {
+      console.error('no plan list found');
+      return [];
     }
-  };
+
+    return data.data.list.map((item: any) => ({
+      id: item.id,
+      title: item.packageName,
+      basePrice: item.salePrice,
+      features: [item.packageDesc],
+      ipLimit: item.deviceLimit,
+      traffic: item.dataAllowance
+    }));
+  } catch (error) {
+    console.error('Error fetching plan list:', error);
+    return [];
+  }
 }
 
-const HomePage = ({ planList }: { planList: IPlanItem[] }) => {
+export default async function HomePage() {
+  const planList = await fetchPlanList();
+
   return (
     <div className="home-bg-primary flex min-h-screen flex-col">
       <Header />
-
-      <PlanCard planList={planList}></PlanCard>
-      {/* <Footer /> */}
+      <PlanCard planList={planList} />
     </div>
   );
-};
-
-export default HomePage;
+}

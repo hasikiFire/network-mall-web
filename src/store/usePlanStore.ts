@@ -1,7 +1,7 @@
 import { IOption } from '@/types';
 import { mockplanList } from '@/lib/mock';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { getPackageGetList } from '@/api';
 
 export type Actions = {
@@ -68,6 +68,8 @@ export interface IPlanItem {
   traffic: number;
 }
 
+const isClient = typeof window !== 'undefined';
+
 export const usePlanStore = create<State & Actions>()(
   persist(
     (set) => ({
@@ -96,8 +98,31 @@ export const usePlanStore = create<State & Actions>()(
         });
         set(() => ({ planList: tempList }));
       },
-      initializePlanList: (data: IPlanItem[]) => set(() => ({ planList: data }))
+      initializePlanList: (data: IPlanItem[]) => {
+        if (typeof window !== 'undefined') {
+          // 只在客户端更新
+          set(() => ({ planList: data }));
+        }
+      }
     }),
-    { name: 'plan-store' }
+    {
+      name: 'plan-store',
+      skipHydration: true, // 这里我们跳过了自动水合
+      storage: createJSONStorage(() => ({
+        getItem: (name) => {
+          // Return null if running on server
+          if (!isClient) return null;
+          return localStorage.getItem(name);
+        },
+        setItem: (name, value) => {
+          if (!isClient) return;
+          localStorage.setItem(name, value);
+        },
+        removeItem: (name) => {
+          if (!isClient) return;
+          localStorage.removeItem(name);
+        }
+      }))
+    }
   )
 );

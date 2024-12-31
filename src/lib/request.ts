@@ -40,14 +40,15 @@ instance.interceptors.request.use(
 // 响应拦截
 instance.interceptors.response.use(
   (res) => {
+    const skipErrorHandler = (res.config as any)?.skipErrorHandler;
+
     if (
       res.data.code !== undefined &&
       res.data.code !== 0 &&
       res.data.code !== 200 &&
-      !(res.config as AxiosRequestConfig & { skipErrorHandler?: boolean })
-        .skipErrorHandler
+      !skipErrorHandler
     ) {
-      if ((res.data.msg || res.data.message).includes('无效用户')) {
+      if ((res.data.msg || res.data.message)?.includes('无效用户')) {
         handleInvalidToken();
         return Promise.reject(res.data);
       } else {
@@ -58,18 +59,18 @@ instance.interceptors.response.use(
     return Promise.resolve(res.data);
   },
   (error: AxiosError<{ code: number; message?: string; msg?: string }>) => {
-    const skipErrorHandler = (
-      error.config as AxiosRequestConfig & { skipErrorHandler?: boolean }
-    ).skipErrorHandler;
+    const skipErrorHandler = (error.config as any)?.skipErrorHandler;
+
     if (error.response?.status === 401 && !skipErrorHandler) {
       handleInvalidToken();
-      return;
+      return Promise.reject(error);
     }
     if (!skipErrorHandler) {
       toast.error(
         error.response?.data?.message ||
           error.response?.data?.msg ||
-          error.message
+          error.message ||
+          '请求失败'
       );
     }
     return Promise.reject(error);

@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { IPlanItem, usePlanStore } from '@/store/usePlanStore';
 import { getPackageGetList } from '@/api';
+import { formatTraffic } from '@/lib/format';
+import Decimal from 'decimal.js';
 
 interface PlanCardItemProps {
   plan: IPlanItem;
-  isLast: boolean;
+  isLast?: boolean;
   home?: boolean;
   period: string;
 }
@@ -19,7 +21,10 @@ interface PlanCardProps {
   home?: boolean;
 }
 
-const planCard: React.FC<PlanCardProps> = ({ planList, home = false }) => {
+const planCard: React.FC<PlanCardProps> = ({
+  planList: initialPlanList,
+  home = false
+}) => {
   const periodOptions = [
     {
       value: 'monthly',
@@ -34,11 +39,13 @@ const planCard: React.FC<PlanCardProps> = ({ planList, home = false }) => {
       label: '年付'
     }
   ];
-  const initializePlanList = usePlanStore((state) => state.initializePlanList);
+  const store = usePlanStore();
 
   useEffect(() => {
-    initializePlanList(planList);
-  }, [planList]);
+    // 手动触发hydration
+    usePlanStore.persist.rehydrate();
+    store.initializePlanList(initialPlanList);
+  }, [initialPlanList]);
 
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(
     'monthly'
@@ -82,12 +89,12 @@ const planCard: React.FC<PlanCardProps> = ({ planList, home = false }) => {
         </div>
       </div>
       <div className="flex justify-center gap-8">
-        {planList?.map((plan, index) => (
+        {initialPlanList?.map((plan, index) => (
           <PlanCardItem
             key={index}
             period={period}
             plan={plan}
-            isLast={index === planList.length - 1}
+            // isLast={index === initialPlanList.length - 1}
             home={home}
           />
         ))}
@@ -100,14 +107,10 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
   isLast,
   period
 }) => {
-  const { title, basePrice, features } = plan;
-  // 计算根据周期调整的价格
-  const adjustedPrice =
-    period === 'annually'
-      ? basePrice * 12
-      : period === 'quarterly'
-      ? basePrice * 3
-      : basePrice;
+  const { title, basePrice, features, ipLimit, traffic } = plan;
+  const adjustedPrice = new Decimal(basePrice)
+    .times(period === 'annually' ? 12 : period === 'quarterly' ? 3 : 1)
+    .toNumber();
 
   const router = useRouter();
 
@@ -157,31 +160,37 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
       </span>
       <h3 className="mb-4 text-lg font-semibold  ">{title}</h3>
       <div className="flex items-baseline border-b pb-4">
-        <span className="text-6xl font-bold  ">￥{adjustedPrice}</span>
-        <span className="ml-1 text-sm  ">
+        <span className="text-xl font-bold">￥</span>
+        <span className="text-6xl font-bold">{adjustedPrice}</span>
+        <span className="ml-1 ">
           /{period === 'annually' ? '年' : period === 'quarterly' ? '季' : '月'}
         </span>
       </div>
       {/* #f35d97 */}
       <ul className="my-4 space-y-4 text-sm  ">
+        <li className="flex items-center space-x-2">
+          <CheckIcon isLast={isLast} />
+          <span>{`可用流量: ${formatTraffic(traffic)}`}</span>
+        </li>
+        <li className="flex items-center space-x-2">
+          <CheckIcon isLast={isLast} />
+          <span>{`套餐时长: ${formatTraffic(traffic)}`}</span>
+        </li>
+        <li className="flex items-center space-x-2">
+          <CheckIcon isLast={isLast} />
+          <span>{`在线IP: ${ipLimit ? `${ipLimit}个` : '无限制'}`}</span>
+        </li>{' '}
+        <li className="flex items-center space-x-2">
+          <CheckIcon isLast={isLast} />
+          <span>{`峰值带宽: ${ipLimit ? `${ipLimit}个` : '200 Mbps'}`}</span>
+        </li>{' '}
+        <li className="flex items-center space-x-2">
+          <CheckIcon isLast={isLast} />
+          <span>{`可用节点：${ipLimit ? `${ipLimit}个` : '1 个'}`}</span>
+        </li>
         {features.map((feature, index) => (
           <li key={index} className={`flex items-center space-x-2  `}>
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="4261"
-              width="200"
-              height="200"
-            >
-              <path
-                d="M512 1024C229.248 1024 0 794.752 0 512S229.248 0 512 0s512 229.248 512 512-229.248 512-512 512z m-114.176-310.954667a53.333333 53.333333 0 0 0 75.434667 0l323.328-323.328a53.333333 53.333333 0 1 0-75.434667-75.434666l-287.914667 283.306666-128.853333-128.853333a53.333333 53.333333 0 1 0-75.434667 75.434667l168.874667 168.874666z"
-                fill={isLast ? '#fff' : '#DD5A86'}
-                p-id="4262"
-                data-spm-anchor-id="a313x.search_index.0.i0.79613a81OakjEJ"
-              ></path>
-            </svg>
+            <CheckIcon isLast={isLast} />
             <span>{feature}</span>
           </li>
         ))}
@@ -203,5 +212,18 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
     </div>
   );
 };
+
+const CheckIcon = ({ isLast }: { isLast?: boolean }) => (
+  <svg
+    className="h-4 w-4"
+    viewBox="0 0 1024 1024"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M512 1024C229.248 1024 0 794.752 0 512S229.248 0 512 0s512 229.248 512 512-229.248 512-512 512z m-114.176-310.954667a53.333333 53.333333 0 0 0 75.434667 0l323.328-323.328a53.333333 53.333333 0 1 0-75.434667-75.434666l-287.914667 283.306666-128.853333-128.853333a53.333333 53.333333 0 1 0-75.434667 75.434667l168.874667 168.874666z"
+      fill={isLast ? '#fff' : '#DD5A86'}
+    />
+  </svg>
+);
 
 export default planCard;
