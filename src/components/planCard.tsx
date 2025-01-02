@@ -21,7 +21,7 @@ interface PlanCardProps {
   home?: boolean;
 }
 
-const planCard: React.FC<PlanCardProps> = ({
+const PlanCard: React.FC<PlanCardProps> = ({
   planList: initialPlanList,
   home = false
 }) => {
@@ -45,7 +45,7 @@ const planCard: React.FC<PlanCardProps> = ({
     // 手动触发hydration
     usePlanStore.persist.rehydrate();
     store.initializePlanList(initialPlanList);
-  }, [initialPlanList]);
+  }, [initialPlanList, store]);
 
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(
     'monthly'
@@ -226,4 +226,4 @@ const CheckIcon = ({ isLast }: { isLast?: boolean }) => (
   </svg>
 );
 
-export default planCard;
+export default PlanCard;
