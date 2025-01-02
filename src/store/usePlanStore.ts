@@ -66,6 +66,7 @@ export interface IPlanItem {
   isPopular?: boolean;
   ipLimit?: number;
   traffic: number;
+  speedLimit: number;
 }
 
 const isClient = typeof window !== 'undefined';
@@ -93,7 +94,8 @@ export const usePlanStore = create<State & Actions>()(
             basePrice: item.salePrice,
             features: [item.packageDesc],
             ipLimit: item.deviceLimit,
-            traffic: item.dataAllowance
+            traffic: item.dataAllowance,
+            speedLimit: item.speedLimit
           };
         });
         set(() => ({ planList: tempList }));

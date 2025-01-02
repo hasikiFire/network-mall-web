@@ -1,4 +1,10 @@
-import { RestRespVoid, RestRespPageRespDtoForeignServerListRespDto, RestRespForeignServer, ForeignEditReqDto, ForeignServerListReqDto } from '@/interface';
+import {
+  RestRespVoid,
+  RestRespPageRespDtoForeignServerListRespDto,
+  RestRespForeignServer,
+  ForeignEditReqDto,
+  ForeignServerListReqDto
+} from '@/interface';
 import { request } from '@/lib/request';
 import { DeepRequired } from 'react-hook-form';
 /**

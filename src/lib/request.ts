@@ -58,7 +58,7 @@ instance.interceptors.response.use(
     }
     return Promise.resolve(res.data);
   },
-  (error: AxiosError<{ code: number; message?: string; msg?: string }>) => {
+  (error: AxiosError<{ code: number; message?: string }>) => {
     const skipErrorHandler = (error.config as any)?.skipErrorHandler;
 
     if (error.response?.status === 401 && !skipErrorHandler) {
@@ -66,12 +66,7 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     }
     if (!skipErrorHandler) {
-      toast.error(
-        error.response?.data?.message ||
-          error.response?.data?.msg ||
-          error.message ||
-          '请求失败'
-      );
+      toast.error(error.response?.data?.message || error.message || '请求失败');
     }
     return Promise.reject(error);
   }

@@ -27,15 +27,15 @@ const PlanCard: React.FC<PlanCardProps> = ({
 }) => {
   const periodOptions = [
     {
-      value: 'monthly',
+      value: '1',
       label: '月付'
     },
     {
-      value: 'quarterly',
+      value: '3',
       label: '季付'
     },
     {
-      value: 'annually',
+      value: '12',
       label: '年付'
     }
   ];
@@ -47,15 +47,16 @@ const PlanCard: React.FC<PlanCardProps> = ({
     if (initialPlanList?.length) {
       store.initializePlanList(initialPlanList);
     }
+    console.log('initialPlanList: ', initialPlanList);
   }, [initialPlanList]);
 
-  const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(
-    'monthly'
+  const [period, setPeriod] = useState<'1' | '3' | '12'>(
+    '1'
   ); // 存储当前选择的周期
 
   // 切换周期
   const handlePeriodChange = (
-    newPeriod: 'monthly' | 'quarterly' | 'annually'
+    newPeriod: '1' | '3' | '12'
   ) => {
     setPeriod(newPeriod);
   };
@@ -109,11 +110,12 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
   isLast,
   period
 }) => {
-  const { title, basePrice, features, ipLimit, traffic } = plan;
+  const { title, basePrice, features, ipLimit, traffic, speedLimit } = plan;
   const adjustedPrice = new Decimal(basePrice)
-    .times(period === 'annually' ? 12 : period === 'quarterly' ? 3 : 1)
+    .times(period === '12' ? 12 : period === '3' ? 3 : 1)
     .toNumber();
-
+  const adjustedDate =
+    period === '12' ? 360 : period === '3' ? 90 : 30;
   const router = useRouter();
 
   const isLogin = useAuthStore((state) => state.isLogin);
@@ -165,27 +167,29 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
         <span className="text-xl font-bold">￥</span>
         <span className="text-6xl font-bold">{adjustedPrice}</span>
         <span className="ml-1 ">
-          /{period === 'annually' ? '年' : period === 'quarterly' ? '季' : '月'}
+          /{period === '12' ? '年' : period === '3' ? '季' : '月'}
         </span>
       </div>
       {/* #f35d97 */}
       <ul className="my-4 space-y-4 text-sm  ">
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
-          <span>{`可用流量: ${formatTraffic(traffic)}`}</span>
+          <span>{`可用流量：${formatTraffic(traffic)}`}</span>
         </li>
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
-          <span>{`套餐时长: ${formatTraffic(traffic)}`}</span>
+          <span>{`套餐时长：${adjustedDate} 天`}</span>
+        </li>{' '}
+        <li className="flex items-center space-x-2">
+          <CheckIcon isLast={isLast} />
+          <span>{`速率限制：${
+            speedLimit ? `${speedLimit}MB/s` : '无限制'
+          }`}</span>
         </li>
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
-          <span>{`在线IP: ${ipLimit ? `${ipLimit}个` : '无限制'}`}</span>
-        </li>{' '}
-        <li className="flex items-center space-x-2">
-          <CheckIcon isLast={isLast} />
-          <span>{`峰值带宽: ${ipLimit ? `${ipLimit}个` : '200 Mbps'}`}</span>
-        </li>{' '}
+          <span>{`在线IP：${ipLimit ? `${ipLimit}个` : '无限制'}`}</span>
+        </li>
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
           <span>{`可用节点：${ipLimit ? `${ipLimit}个` : '1 个'}`}</span>

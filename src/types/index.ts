@@ -43,3 +43,9 @@ export interface IOption<T> {
   label: string;
   value: T;
 }
+
+export interface IResponse<T> {
+  code: number;
+  data: T;
+  message: string;
+}
