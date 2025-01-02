@@ -47,7 +47,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
     if (initialPlanList?.length) {
       store.initializePlanList(initialPlanList);
     }
-  }, [initialPlanList, store]);
+  }, [initialPlanList]);
 
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(
     'monthly'
