@@ -28,6 +28,9 @@
       ],
       "@/auth": [
         "./src/auth"
+      ],
+      "@root/*": [
+        "./*"
       ]
     },
     "noUncheckedIndexedAccess": true
