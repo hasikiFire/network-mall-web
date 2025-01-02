@@ -17,7 +17,7 @@ interface PlanCardItemProps {
 }
 
 interface PlanCardProps {
-  planList: IPlanItem[];
+  planList?: IPlanItem[];
   home?: boolean;
 }
 
@@ -44,7 +44,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
   useEffect(() => {
     // 手动触发hydration
     usePlanStore.persist.rehydrate();
-    store.initializePlanList(initialPlanList);
+    if (initialPlanList?.length) {
+      store.initializePlanList(initialPlanList);
+    }
   }, [initialPlanList, store]);
 
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'annually'>(

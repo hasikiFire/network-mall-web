@@ -6,7 +6,7 @@ export type Actions = {
   reset: () => void;
 };
 export type State = {
-  formData?: IOrderItem;
+  formData: IOrderItem;
 };
 
 export interface IOrderItem {
@@ -28,7 +28,7 @@ export const useOrderStore = create<State & Actions>()(
     (set) => ({
       formData: { ...mockDefaultValue },
 
-      reset: () => set(() => ({ formData: undefined })),
+      reset: () => set(() => ({ formData: { ...mockDefaultValue } })),
 
       setOrderData: (data: Partial<IOrderItem>) =>
         set((state) => ({ formData: { ...state.formData, ...data } }))

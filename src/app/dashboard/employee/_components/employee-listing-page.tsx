@@ -29,7 +29,7 @@ export default async function EmployeeListingPage({}: TEmployeeListingPage) {
   // mock api call
   const data = await fakeUsers.getUsers(filters);
   const totalUsers = data.total_users;
-  const employee: Employee[] = data.users;
+  const employee: Employee[] = data.users as Employee[];
 
   return (
     <PageContainer scrollable>

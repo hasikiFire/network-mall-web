@@ -25,7 +25,7 @@ export type User = {
   longitude: number;
   latitude: number;
   gender: Gender;
-  date_of_birth: string;
+  date_of_birth?: string;
   job: string;
   profile_picture: string;
 };

@@ -3,9 +3,8 @@ import { fakeProducts } from '@/constants/mock-api';
 import { searchParamsCache } from '@/lib/searchparams';
 import { DataTable as ProductTable } from '@/components/ui/table/data-table';
 import { columns } from './product-tables/columns';
-import { SearchParams } from 'nuqs/server';
 
-type ProductListingPage = { searchParams: Promise<SearchParams> }; // Next.js 15+: async searchParams prop};
+type ProductListingPage = { searchParams: Promise<any> }; // Next.js 15+: async searchParams prop};
 
 export default async function ProductListingPage({
   searchParams
