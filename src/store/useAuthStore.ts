@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 export type Actions = {
   login: (data: any) => void;
+  logout: () => void;
 };
 export type State = {
   user?: IUser;

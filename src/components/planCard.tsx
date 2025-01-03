@@ -47,17 +47,12 @@ const PlanCard: React.FC<PlanCardProps> = ({
     if (initialPlanList?.length) {
       store.initializePlanList(initialPlanList);
     }
-    console.log('initialPlanList: ', initialPlanList);
   }, [initialPlanList]);
 
-  const [period, setPeriod] = useState<'1' | '3' | '12'>(
-    '1'
-  ); // 存储当前选择的周期
+  const [period, setPeriod] = useState<'1' | '3' | '12'>('1'); // 存储当前选择的周期
 
   // 切换周期
-  const handlePeriodChange = (
-    newPeriod: '1' | '3' | '12'
-  ) => {
+  const handlePeriodChange = (newPeriod: '1' | '3' | '12') => {
     setPeriod(newPeriod);
   };
 
@@ -92,7 +87,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
         </div>
       </div>
       <div className="flex justify-center gap-8">
-        {initialPlanList?.map((plan, index) => (
+        {store.planList?.map((plan, index) => (
           <PlanCardItem
             key={index}
             period={period}
@@ -114,8 +109,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
   const adjustedPrice = new Decimal(basePrice)
     .times(period === '12' ? 12 : period === '3' ? 3 : 1)
     .toNumber();
-  const adjustedDate =
-    period === '12' ? 360 : period === '3' ? 90 : 30;
+  const adjustedDate = period === '12' ? 360 : period === '3' ? 90 : 30;
   const router = useRouter();
 
   const isLogin = useAuthStore((state) => state.isLogin);
