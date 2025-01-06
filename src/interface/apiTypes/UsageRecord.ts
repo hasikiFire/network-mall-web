@@ -10,8 +10,10 @@ export interface UsageRecord {
     consumedDataTransfer?: number;
     speedLimit?: number;
     deviceNum?: number;
+    deviceLimit?: number;
     subscriptionLink?: string;
     createdAt?: string;
     updatedAt?: string;
     deleted?: number;
+    _endTime?: string;
 }

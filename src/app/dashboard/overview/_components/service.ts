@@ -1,15 +1,21 @@
-import {
-  getUsageRecordDetail, 
-} from '@/api';
-import { 
-  UserRegisterReqDto, 
-} from '@/interface';
+import { getUsageRecordDetail, getUserGetSubscribe } from '@/api';
+import { getRemainingTime } from '@/lib/date';
 
-export default class Service {
-  async register(params: UserRegisterReqDto) {
-    const res = await getUsageRecordDetail(params);
-    if (res.code === 200) {
-      return res.data;
+class Service {
+  async getRecordDetail() {
+    const res = await getUsageRecordDetail();
+
+    const data = res.data;
+    if (data) {
+      data._endTime = getRemainingTime(data.purchaseEndTime);
     }
+
+    return data;
+  }
+
+  async getSubscribeLink() {
+    const res = await getUserGetSubscribe();
+    return res.data;
   }
 }
+export default new Service();

@@ -5,31 +5,36 @@ import axios, {
   AxiosRequestHeaders
 } from 'axios';
 import { toast } from 'sonner';
-
 // 定义响应数据的类型（可扩展）
 
 const instance = axios.create({
   timeout: 30 * 1000
 });
 const handleInvalidToken = () => {
-  toast.error('登录信息过期, 请重新登录');
-  localStorage.removeItem('access_token');
-  // TODO
-  // gotoLogin();
+  console.log('handleInvalidToken window: ', window);
+  // 确保在客户端环境中调用
+  if (typeof window !== 'undefined') {
+    toast.error('登录信息过期, 请重新登录');
+    localStorage.removeItem('token');
+    // Router.push('/login'); // You should only use "next/router" on the client side of your app.
+    window.location.href = '/login'; // 根据你的路由调整路径
+  }
 };
 
 // 请求拦截
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
-    config.headers = {
-      Authorization: `Bearer ${token}`,
-      token: `${token}`,
-      'access-token': `${token}`,
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      config.headers = {
+        Authorization: `Bearer ${token}`,
+        token: `${token}`,
+        'access-token': `${token}`,
 
-      ...config.headers
-    } as unknown as AxiosRequestHeaders;
-    config.url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${config.url}`;
+        ...config.headers
+      } as unknown as AxiosRequestHeaders;
+      config.url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${config.url}`;
+    }
     return config;
   },
   (error) => {
@@ -48,7 +53,10 @@ instance.interceptors.response.use(
       res.data.code !== 200 &&
       !skipErrorHandler
     ) {
-      if ((res.data.msg || res.data.message)?.includes('无效用户')) {
+      if (
+        (res.data.msg || res.data.message)?.includes('无效用户') ||
+        res.data.code === 401
+      ) {
         handleInvalidToken();
         return Promise.reject(res.data);
       } else {

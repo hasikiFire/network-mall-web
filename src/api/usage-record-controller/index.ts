@@ -1,22 +1,20 @@
 import {
-  RestRespPageRespDtoPackageListRespDto,
   PackageEditReqDto,
   RestRespUsageRecord,
-  PackageListReqDto
+  PackageListReqDto,
+  UsageRecord
 } from '@/interface';
+import { IResp } from '@/interface/apiTypes/IResp';
 import { request } from '@/lib/request';
 import { DeepRequired } from 'react-hook-form';
 
 /**
  * /usageRecord/detail
  */
-export function getUsageRecordDetail(params: GetUsageRecordDetailParams) {
-  return request<DeepRequired<RestRespPageRespDtoPackageListRespDto>>({
+export function getUsageRecordDetail() {
+  return request<DeepRequired<IResp<UsageRecord>>>({
     url: `/usageRecord/detail`,
-    method: 'GET',
-    params: {
-      ...params.params
-    }
+    method: 'GET'
   });
 }
 

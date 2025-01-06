@@ -47,13 +47,13 @@ export default function UserAuthForm() {
   const onSubmit = async (data: UserFormValue) => {
     startTransition(async () => {
       try {
-        await service.login({
+        const res = await service.login({
           email: data.email,
           password: data.password
         });
         login({
           email: data.email,
-          password: data.password
+          token: res.token
         });
         toast.success('登录成功!');
 

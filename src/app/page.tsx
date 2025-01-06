@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import Header from '@/components/header';
 import PlanCard from '@/components/planCard';
 import { IPlanItem, usePlanStore } from '@/store/usePlanStore';
 import { serverFetch } from '@/lib/serverFetch';
 import { PageRespDtoPackageListRespDto } from '@/interface';
+import { Loading } from '@/components/loading';
 
 async function fetchPlanList(): Promise<IPlanItem[]> {
   try {
@@ -36,7 +38,9 @@ export default async function HomePage() {
   return (
     <div className="home-bg-primary flex min-h-screen flex-col">
       <Header />
-      <PlanCard planList={planList} />
+      <Suspense fallback={<Loading />}>
+        <PlanCard planList={planList} />
+      </Suspense>
     </div>
   );
 }

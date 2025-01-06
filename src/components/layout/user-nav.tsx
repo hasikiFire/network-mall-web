@@ -18,8 +18,8 @@ export function UserNav() {
   const authStore = useAuthStore();
 
   const logout = () => {
-    signOut();
     authStore.logout();
+    signOut();
   };
 
   if (session) {

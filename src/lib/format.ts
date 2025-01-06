@@ -1,14 +1,42 @@
+import Decimal from 'decimal.js';
+
 export const formatTraffic = (bytes: number): string => {
-  if (!bytes) return '不限制';
+  if (!bytes) return '无可用流量';
 
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  let size = bytes;
+  let size = new Decimal(bytes);
   let unitIndex = 0;
 
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex++;
+  // 当流量小于 1GB 时，强制使用 MB 作为单位
+  if (bytes < 1024 * 1024 * 1024) {
+    // 1GB = 1024 * 1024 * 1024 B
+    size = size.dividedBy(1024 * 1024); // 转换为 MB
+    unitIndex = 2; // 单位设置为 MB
+  } else {
+    // 否则按原逻辑处理
+    while (size.gte(1024) && unitIndex < units.length - 1) {
+      size = size.dividedBy(1024);
+      unitIndex++;
+    }
   }
 
-  return `${size.toFixed(0)} ${units[unitIndex]}`;
+  // 自动判断小数点位数
+  const value = size.toNumber(); // 转换为 JavaScript 数字
+  const isInteger = Number.isInteger(value); // 判断是否为整数
+  const decimalPlaces = (value.toString().split('.')[1] || '').length; // 获取小数位数
+
+  let formattedValue: string;
+
+  if (isInteger) {
+    // 如果是整数，不显示小数点
+    formattedValue = value.toFixed(0);
+  } else if (decimalPlaces > 3) {
+    // 如果小数位数超过 3 位，显示 3 位小数
+    formattedValue = value.toFixed(3);
+  } else {
+    // 否则，保留原始小数位数
+    formattedValue = value.toString();
+  }
+
+  return `${formattedValue} ${units[unitIndex]}`;
 };

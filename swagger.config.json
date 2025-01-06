@@ -1,6 +1,6 @@
 {
-  "docsUrl": "www.example.com",
-  "includeTags": [],
+  "docsUrl": "https:/www.example.com/v3/api-docs",
+  "includeTags": ["usage-record-controller"],
   "excludeTags": ["bot-callback-controller"],
   "axiosInstanceUrl": "@/lib/request",
   "prefix": "",
