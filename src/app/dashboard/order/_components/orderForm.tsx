@@ -17,6 +17,7 @@ import { NumberInput } from '@/components/NumberInput';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useEffect, useState } from 'react';
 import { usePlanStore } from '@/store/usePlanStore';
+import { useSearchParams } from 'next/navigation';
 
 // 定义表单验证规则
 const formSchema = z.object({
@@ -34,31 +35,43 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-export function OrderForm() {
-  const { formData, setOrderData } = useOrderStore();
-  const { planList, monthOptions } = usePlanStore();
+const OrderForm = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const period = searchParams.get('period');
+  const orderStore = useOrderStore();
+  const { monthOptions, planList } = usePlanStore();
+  const activePlan = planList?.find((v) => v.id === Number(id));
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: formData
+    defaultValues: orderStore.formData
   });
-  const [_, forceRender] = useState(0);
 
-  const plan = form.watch('plan');
+  useEffect(() => {
+    init();
+  }, [id, period]);
+
+  const init = async () => {
+    if (!id) return;
+    if (!activePlan) return;
+    const newValues = {
+      ...form.getValues(),
+      plan: id ?? '',
+      duration: Number(period),
+      traffic: activePlan?.traffic ?? 0,
+      onlineIPs: activePlan?.ipLimit
+    };
+    form.reset(newValues);
+    orderStore.setOrderData(newValues);
+  };
 
   // 使用 useEffect 监听表单变化
   useEffect(() => {
     const subscription = form.watch((values) => {
-      setOrderData(values);
+      orderStore.setOrderData(values);
     });
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅
   }, [form.watch]);
-
-  useEffect(() => {
-    const planDetail = planList?.find((v) => String(v.id) === plan);
-    if (!planDetail?.traffic) return;
-    form.setValue('traffic', planDetail?.traffic); 
-  }, [plan]);
 
   // const onPlanChange = (v) => {};
   return (
@@ -181,7 +194,7 @@ export function OrderForm() {
                   </FormLabel>
                   <FormControl>
                     <NumberInput
-                      min={formData?.traffic}
+                      min={activePlan?.traffic ?? 0}
                       max={2000}
                       step={10}
                       {...field}
@@ -215,4 +228,6 @@ export function OrderForm() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default OrderForm;

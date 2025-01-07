@@ -24,9 +24,7 @@ import {
   storeNavItems,
   useNavItems
 } from '@/constants/data';
-import {
-  ChevronRight,
-  GalleryVerticalEnd} from 'lucide-react';
+import { ChevronRight, GalleryVerticalEnd } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -35,9 +33,9 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { NavItem } from '@/types';
 
 export const company = {
-  name: 'Acme Inc',
-  logo: GalleryVerticalEnd,
-  plan: 'Enterprise'
+  name: 'Hasaki',
+  logo: GalleryVerticalEnd
+  // plan: 'Enterprise'
 };
 
 export default function AppSidebar() {
@@ -53,21 +51,23 @@ export default function AppSidebar() {
             <company.logo className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{company.name}</span>
-            <span className="truncate text-xs">{company.plan}</span>
+            <span className="flex items-center truncate font-semibold">
+              {company.name}
+            </span>
+            {/* <span className="truncate text-xs">{company.plan}</span> */}
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent className="overflow-x-hidden">
         <SidebarGroup>
           <NetSidebarMenu navItems={homeNavItems}></NetSidebarMenu>
-          <SidebarGroupLabel>我的</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm">我的</SidebarGroupLabel>
           <NetSidebarMenu navItems={storeNavItems}></NetSidebarMenu>
-          <SidebarGroupLabel>教程</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm">教程</SidebarGroupLabel>
           <NetSidebarMenu navItems={useNavItems}></NetSidebarMenu>
           {isAdmin && (
             <>
-              <SidebarGroupLabel>管理</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-sm">管理</SidebarGroupLabel>
               <NetSidebarMenu navItems={managerNavItems}></NetSidebarMenu>
             </>
           )}
@@ -200,20 +200,23 @@ const NetSidebarMenu = ({ navItems }: { navItems: NavItem[] }) => {
             </SidebarMenuItem>
           </Collapsible>
         ) : (
-          <SidebarMenuItem key={item.title}>
+          <SidebarMenuItem key={item.title} className="text-xl">
             <SidebarMenuButton
               asChild
               tooltip={item.title}
               isActive={pathname === item.url}
+
               // className={pathname === item.url ? '!bg-primary  ' : ''}
             >
               <Link
                 href={item.url}
                 className={
-                  pathname === item.url ? '!bg-primary-foreground  !text-primary' : ''
+                  pathname === item.url
+                    ? 'text  !bg-primary-foreground !text-primary'
+                    : 'text-lg'
                 }
               >
-                <Icon />
+                <Icon size={24} />
                 <span>{item.title}</span>
               </Link>
             </SidebarMenuButton>

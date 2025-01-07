@@ -4,10 +4,9 @@ import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { IPlanItem, usePlanStore } from '@/store/usePlanStore';
-import { getPackageGetList } from '@/api';
-import { formatTraffic } from '@/lib/format';
+import { IPlanItem, periodOptions, usePlanStore } from '@/store/usePlanStore';
 import Decimal from 'decimal.js';
+import { fetchPlanList } from '@/api/server';
 
 interface PlanCardItemProps {
   plan: IPlanItem;
@@ -25,29 +24,21 @@ const PlanCard: React.FC<PlanCardProps> = ({
   planList: initialPlanList,
   home = false
 }) => {
-  const periodOptions = [
-    {
-      value: '1',
-      label: '月付'
-    },
-    {
-      value: '3',
-      label: '季付'
-    },
-    {
-      value: '12',
-      label: '年付'
-    }
-  ];
-  const store = usePlanStore();
+  const { planList } = usePlanStore();
+  // 如果持久化统一要这种 usePlanStore.getState().planList;
 
   useEffect(() => {
-    // 手动触发hydration
-    usePlanStore.persist.rehydrate();
-    if (initialPlanList?.length) {
-      store.initializePlanList(initialPlanList);
-    }
+    init();
   }, [initialPlanList]);
+
+  const init = async () => {
+    if (initialPlanList?.length) {
+      usePlanStore.getState().initializePlanList(initialPlanList);
+    } else if (planList?.length === 0) {
+      const planList = await fetchPlanList();
+      usePlanStore.getState().initializePlanList(planList);
+    }
+  };
 
   const [period, setPeriod] = useState<'1' | '3' | '12'>('1'); // 存储当前选择的周期
 
@@ -87,7 +78,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
         </div>
       </div>
       <div className="flex justify-center gap-8">
-        {store.planList?.map((plan, index) => (
+        {planList?.map((plan, index) => (
           <PlanCardItem
             key={index}
             period={period}
@@ -118,7 +109,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
       router.push('/login');
       return;
     }
-    router.push(`/dashboard/order?id=${plan.id}`);
+    router.push(`/dashboard/order?id=${plan.id}&period=${period}`);
   };
 
   return (
@@ -131,32 +122,34 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
       {/* {isPopular && (
         <span className="mb-2 block text-sm font-black  ">🌟 推荐</span>
       )} */}
-      <span className="mb-2 ">
-        <svg
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="13731"
-          className={`h-8 w-8 rounded-md   rounded-md px-2 py-2 ${
-            isLast ? 'bg-white' : 'bg-[#DD5A86]'
-          }`}
-        >
-          {isLast ? (
-            <path
-              d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"
-              p-id="13732"
-              fill="#DD5A86"
-            ></path>
-          ) : (
-            <path
-              d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"
-              p-id="13732"
-              fill="#ffffff"
-            ></path>
-          )}
-        </svg>
-      </span>
-      <h3 className="mb-4 text-lg font-semibold  ">{title}</h3>
+      <div className="flex items-center mb-4  ">
+        <span className="  mr-2 ">
+          <svg
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="13731"
+            className={`h-8 w-8 rounded-md   rounded-md px-2 py-2 ${
+              isLast ? 'bg-white' : 'bg-[#DD5A86]'
+            }`}
+          >
+            {isLast ? (
+              <path
+                d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"
+                p-id="13732"
+                fill="#DD5A86"
+              ></path>
+            ) : (
+              <path
+                d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"
+                p-id="13732"
+                fill="#ffffff"
+              ></path>
+            )}
+          </svg>
+        </span>
+        <h3 className=" text-lg font-semibold  ">{title}</h3>{' '}
+      </div>
       <div className="flex items-baseline border-b pb-4">
         <span className="text-xl font-bold">￥</span>
         <span className="text-6xl font-bold">{adjustedPrice}</span>
@@ -168,7 +161,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
       <ul className="my-4 space-y-4 text-sm  ">
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
-          <span>{`可用流量：${formatTraffic(traffic)}`}</span>
+          <span>{`可用流量：${traffic} GB`}</span>
         </li>
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
@@ -177,7 +170,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
           <span>{`速率限制：${
-            speedLimit ? `${speedLimit}MB/s` : '无限制'
+            speedLimit ? `${speedLimit} MB/s` : '无限制'
           }`}</span>
         </li>
         <li className="flex items-center space-x-2">

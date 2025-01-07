@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 export type Actions = {
   setOrderData: (data: Partial<IOrderItem>) => void;
   reset: () => void;
 };
+
 export type State = {
   formData: IOrderItem;
 };
@@ -16,23 +16,20 @@ export interface IOrderItem {
   duration: number;
   payment: string;
 }
-const mockDefaultValue = {
-  plan: '1',
-  traffic: 50,
-  onlineIPs: 3,
+
+const defaultValue = {
+  plan: '',
+  traffic: 0,
+  onlineIPs: 0,
   duration: 1,
   payment: 'alipay'
 };
-export const useOrderStore = create<State & Actions>()(
-  persist(
-    (set) => ({
-      formData: { ...mockDefaultValue },
 
-      reset: () => set(() => ({ formData: { ...mockDefaultValue } })),
+export const useOrderStore = create<State & Actions>((set) => ({
+  formData: { ...defaultValue },
 
-      setOrderData: (data: Partial<IOrderItem>) =>
-        set((state) => ({ formData: { ...state.formData, ...data } }))
-    }),
-    { name: 'order-store' }
-  )
-);
+  reset: () => set(() => ({ formData: { ...defaultValue } })),
+
+  setOrderData: (data: Partial<IOrderItem>) =>
+    set((state) => ({ formData: { ...state.formData, ...data } }))
+}));

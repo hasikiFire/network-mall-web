@@ -47,7 +47,7 @@ export interface ISumary {
 const OrderSumary = () => {
   const { formData, setOrderData } = useOrderStore();
   const { planList, planConfig, payOptions } = usePlanStore();
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   const [isOpen, setIsOpen] = useState(false);
   const [summary, setSummary] = useState<ISumary>({
@@ -64,28 +64,32 @@ const OrderSumary = () => {
 
   useEffect(() => {
     if (!formData) return;
-    const planDetail = planList?.find((v) => String(v.id) === formData?.plan);
-    if (!planDetail) {
+    const activePlan = planList?.find((v) => String(v.id) === formData?.plan);
+    if (!activePlan) {
       return;
     }
 
     // 使用 Decimal 来进行高精度计算
-    let curTotal = new Decimal(planDetail.basePrice).mul(formData.duration);
-    if (planConfig.IPConfigable && formData.onlineIPs && planDetail.ipLimit) {
+    let curTotal = new Decimal(activePlan.basePrice).mul(formData.duration);
+    console.log('curTotal: ', curTotal.toString());
+    console.log('formData: ', formData);
+    console.log('activePlan: ', activePlan);
+    if (planConfig.IPConfigable && formData.onlineIPs && activePlan.ipLimit) {
       curTotal = curTotal.add(
         new Decimal(planConfig.IPPrice).mul(
-          formData.onlineIPs - planDetail.ipLimit
+          formData.onlineIPs - activePlan.ipLimit
         )
       );
     }
-
+    console.log('curTotal2: ', curTotal.toString());
     if (planConfig?.trafficConfigable && formData.traffic) {
       curTotal = curTotal.add(
         new Decimal(planConfig.trafficPrice).mul(
-          formData.traffic - planDetail.traffic
+          formData.traffic - activePlan.traffic
         )
       );
     }
+    console.log('curTotal3: ', curTotal.toString());
     const tempfee = curTotal.toNumber();
 
     // 处理折扣
@@ -152,18 +156,18 @@ const OrderSumary = () => {
         </CardHeader>
         <CardContent>
           <div className="mb-2 flex justify-between">
-            <span className="text-gray-600">账户余额</span>
-            <span className="text-lg text-amber-500">
-              ￥{summary.countFee.toFixed(2)}
-            </span>
-          </div>
-
-          <div className="mb-2 flex justify-between">
             <span className="text-gray-600">订单金额</span>
             <span className="text-lg text-amber-500">
               ￥{summary.orderFee.toFixed(2)}
             </span>
           </div>
+          {/* <div className="mb-2 flex justify-between">
+            <span className="text-gray-600">账户余额</span>
+            <span className="text-lg text-amber-500">
+              -￥{summary.countFee.toFixed(2)}
+            </span>
+          </div> */}
+
           <div className="mb-2 flex justify-between">
             <div className="flex text-gray-600">
               <div className="mr-1">优惠金额</div>
@@ -189,7 +193,7 @@ const OrderSumary = () => {
           </div>
           <div className="mt-4 flex justify-between  border-t py-4 text-lg ">
             <span className="font-bold text-gray-600">总计</span>
-            <span className="text-lg font-bold text-amber-500">
+            <span className="text-2xl font-bold text-amber-500">
               ￥{summary.total.toFixed(2)}
             </span>
           </div>

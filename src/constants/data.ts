@@ -138,13 +138,13 @@ export const homeNavItems: NavItem[] = [
 ];
 
 export const storeNavItems: NavItem[] = [
-  {
-    title: '订阅中心',
-    url: '/dashboard/subscribe',
-    icon: 'product',
-    isActive: false,
-    items: [] // No child items
-  },
+  // {
+  //   title: '订阅中心',
+  //   url: '/dashboard/subscribe',
+  //   icon: 'product',
+  //   isActive: false,
+  //   items: [] // No child items
+  // },
   {
     title: '使用记录',
     url: '/dashboard/records',
@@ -153,12 +153,12 @@ export const storeNavItems: NavItem[] = [
     items: [] // No child items
   },
 
-  {
-    title: '我的钱包',
-    url: '/dashboard/profile',
-    icon: 'billing',
-    isActive: true
-  },
+  // {
+  //   title: '我的钱包',
+  //   url: '/dashboard/profile',
+  //   icon: 'billing',
+  //   isActive: true
+  // },
 
   {
     title: '账单',

@@ -29,7 +29,6 @@
 .btn-bg-primary {
   background-color: #ec8274;
   background-image: linear-gradient(135deg, #ec8274 53%, #e05cc5 100%);
-  
 }
 
 .text-bg {
@@ -38,9 +37,8 @@
   background-size: 100%;
   -webkit-background-clip: text;
   -moz-background-clip: text;
-  -webkit-text-fill-color: transparent; 
+  -webkit-text-fill-color: transparent;
   -moz-text-fill-color: transparent;
- 
 }
 
 .header-bg {
@@ -52,4 +50,15 @@
     #f0fdff 100%
   );
   backdrop-filter: blur(10px);
+}
+
+/* 自定义 CSS */
+.no-arrows::-webkit-inner-spin-button,
+.no-arrows::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-arrows {
+  -moz-appearance: textfield; /* 适配 Firefox */
 }

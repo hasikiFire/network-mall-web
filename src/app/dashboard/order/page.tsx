@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { OrderForm } from './_components/orderForm';
+import OrderForm from './_components/orderForm';
 import OrderSumary from './_components/orderSumary';
 const CartPage: React.FC = () => {
   return (

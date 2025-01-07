@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 
-export const formatTraffic = (bytes: number): string => {
-  if (!bytes) return '无可用流量';
+export const formatTraffic = (bytes: number, unit = true): string => {
+  if (!bytes) return '0';
 
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   let size = new Decimal(bytes);
@@ -22,6 +22,7 @@ export const formatTraffic = (bytes: number): string => {
 
   // 自动判断小数点位数
   const value = size.toNumber(); // 转换为 JavaScript 数字
+  if (!unit) return value.toString();
   const isInteger = Number.isInteger(value); // 判断是否为整数
   const decimalPlaces = (value.toString().split('.')[1] || '').length; // 获取小数位数
 
@@ -30,13 +31,16 @@ export const formatTraffic = (bytes: number): string => {
   if (isInteger) {
     // 如果是整数，不显示小数点
     formattedValue = value.toFixed(0);
-  } else if (decimalPlaces > 3) {
-    // 如果小数位数超过 3 位，显示 3 位小数
-    formattedValue = value.toFixed(3);
+  } else if (decimalPlaces > 2) {
+    // 如果小数位数超过 2 位，显示 2 位小数
+    formattedValue = value.toFixed(2);
   } else {
     // 否则，保留原始小数位数
     formattedValue = value.toString();
   }
 
   return `${formattedValue} ${units[unitIndex]}`;
+};
+export const bToGB = (bytes: number): number => {
+  return new Decimal(bytes).dividedBy(1024 * 1024 * 1024).toNumber();
 };

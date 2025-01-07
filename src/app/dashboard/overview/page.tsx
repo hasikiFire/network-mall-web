@@ -1,7 +1,5 @@
 'use client';
-import { Suspense } from 'react';
 import PageContainer from '@/components/layout/page-container';
-import { OverviewSkeleton } from '@/components/skeletons/overview-skeleton';
 import { OverviewCards } from './_components/overview-cards';
 import { QuickLinks } from './_components/quick-links';
 
@@ -15,7 +13,7 @@ export default function OverViewPage() {
 
         <OverviewCards />
 
-        <QuickLinks />
+        {/* <QuickLinks /> */}
       </div>
     </PageContainer>
   );
