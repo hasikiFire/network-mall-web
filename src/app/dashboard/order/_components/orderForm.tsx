@@ -18,6 +18,9 @@ import { useOrderStore } from '@/store/useOrderStore';
 import { useEffect, useState } from 'react';
 import { usePlanStore } from '@/store/usePlanStore';
 import { useSearchParams } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 // 定义表单验证规则
 const formSchema = z.object({
@@ -31,7 +34,8 @@ const formSchema = z.object({
     .max(10, '在线 IP 数不能超过 10'),
   duration: z.number({
     required_error: '请选择购买时长。'
-  })
+  }),
+  couponCode: z.string()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -40,7 +44,7 @@ const OrderForm = () => {
   const id = searchParams.get('id');
   const period = searchParams.get('period');
   const orderStore = useOrderStore();
-  const { monthOptions, planList } = usePlanStore();
+  const { monthOptions, planList, planConfig } = usePlanStore();
   const activePlan = planList?.find((v) => v.id === Number(id));
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -73,10 +77,26 @@ const OrderForm = () => {
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅
   }, [form.watch]);
 
+  const handleApplyCoupon = () => {
+    if (!form.getValues('couponCode')) return;
+    if (form.getValues('couponCode') === 'Hasaki') {
+      //TODO 验证
+      orderStore.setOrderData({
+        couponCode: form.getValues('couponCode'),
+        discount: 0
+      });
+    } else {
+      toast.error('优惠码无效', {
+        richColors: true,
+        duration: 2000
+      });
+    }
+  };
+
   // const onPlanChange = (v) => {};
   return (
     <Card>
-      <CardHeader className="text-2xl font-bold">选择订阅计划</CardHeader>
+      <CardHeader className="text-2xl font-bold">确认订单信息</CardHeader>
       <CardContent>
         <Form {...form}>
           <form className=" space-y-8">
@@ -122,10 +142,10 @@ const OrderForm = () => {
                                 {v.title}
                               </div>
                               <div>
-                                <span className="mr-2 inline-block text-4xl font-bold text-amber-500">
+                                <span className="mr-0.5 inline-block text-4xl font-bold text-amber-500">
                                   {v.basePrice}
                                 </span>
-                                <span className="text-base">元/月</span>
+                                <span className="text-base ">元</span>
                               </div>
                             </div>
                           </FormLabel>
@@ -184,44 +204,76 @@ const OrderForm = () => {
               )}
             />
             {/* 可用流量 */}
+            {planConfig.trafficConfigable && (
+              <FormField
+                control={form.control}
+                name="traffic"
+                render={({ field }) => (
+                  <FormItem className="flex space-y-0">
+                    <FormLabel className="  w-28 text-gray-600">
+                      可用流量 (GB)
+                    </FormLabel>
+                    <FormControl>
+                      <NumberInput
+                        min={activePlan?.traffic ?? 0}
+                        max={2000}
+                        step={10}
+                        {...field}
+                        className="w-52"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {/* 在线 IP   */}
+            {planConfig.IPConfigable && (
+              <FormField
+                control={form.control}
+                name="onlineIPs"
+                render={({ field }) => (
+                  <FormItem className="flex space-y-0">
+                    <FormLabel className="  w-28 text-gray-600">
+                      在线 IP 数(个)
+                    </FormLabel>
+                    <FormControl>
+                      <NumberInput
+                        min={3}
+                        max={10}
+                        {...field}
+                        className="w-52"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
-              name="traffic"
+              name="couponCode"
               render={({ field }) => (
                 <FormItem className="flex space-y-0">
-                  <FormLabel className="  w-28 text-gray-600">
-                    可用流量 (GB)
-                  </FormLabel>
+                  <FormLabel className="w-28 text-gray-600">优惠码</FormLabel>
                   <FormControl>
-                    <NumberInput
-                      min={activePlan?.traffic ?? 0}
-                      max={2000}
-                      step={10}
-                      {...field}
-                      className="w-52"
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input {...field} placeholder="选填" className="w-52" />
+                      <Button
+                        type="button"
+                        variant="default"
+                        className="w-20"
+                        onClick={handleApplyCoupon}
+                      >
+                        验证
+                      </Button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* 在线 IP   */}
-            <FormField
-              control={form.control}
-              name="onlineIPs"
-              render={({ field }) => (
-                <FormItem className="flex space-y-0">
-                  <FormLabel className="  w-28 text-gray-600">
-                    在线 IP 数(个)
-                  </FormLabel>
-                  <FormControl>
-                    <NumberInput min={3} max={10} {...field} className="w-52" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             {/* 支付方式 */}
           </form>
         </Form>

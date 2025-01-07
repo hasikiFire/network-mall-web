@@ -11,32 +11,11 @@ import alippayIcon from '@/style/image/alippay.svg';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Image from 'next/image';
 import { useOrderStore } from '@/store/useOrderStore';
-import { Modal } from '@/components/ui/modal';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Decimal from 'decimal.js';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import Tag from '@/components/ui/tag';
 import { usePlanStore } from '@/store/usePlanStore';
-import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 import Loading from '@/components/loaindg';
-
-const FormSchema = z.object({
-  promotionCode: z.string({
-    message: '请输入优惠码'
-  })
-});
 
 export interface ISumary {
   countFee: number;
@@ -49,7 +28,6 @@ const OrderSumary = () => {
   const { planList, planConfig, payOptions } = usePlanStore();
   // const { theme } = useTheme();
 
-  const [isOpen, setIsOpen] = useState(false);
   const [summary, setSummary] = useState<ISumary>({
     countFee: 0,
     orderFee: 0,
@@ -71,9 +49,6 @@ const OrderSumary = () => {
 
     // 使用 Decimal 来进行高精度计算
     let curTotal = new Decimal(activePlan.basePrice).mul(formData.duration);
-    console.log('curTotal: ', curTotal.toString());
-    console.log('formData: ', formData);
-    console.log('activePlan: ', activePlan);
     if (planConfig.IPConfigable && formData.onlineIPs && activePlan.ipLimit) {
       curTotal = curTotal.add(
         new Decimal(planConfig.IPPrice).mul(
@@ -81,7 +56,6 @@ const OrderSumary = () => {
         )
       );
     }
-    console.log('curTotal2: ', curTotal.toString());
     if (planConfig?.trafficConfigable && formData.traffic) {
       curTotal = curTotal.add(
         new Decimal(planConfig.trafficPrice).mul(
@@ -89,7 +63,6 @@ const OrderSumary = () => {
         )
       );
     }
-    console.log('curTotal3: ', curTotal.toString());
     const tempfee = curTotal.toNumber();
 
     // 处理折扣
@@ -109,24 +82,8 @@ const OrderSumary = () => {
     }));
   }, [formData, planList, promotionData]);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      promotionCode: ''
-    }
-  });
-
   const onChange = (v: string) => {
     setOrderData({ payment: v });
-  };
-
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    // TODO check code
-    setIsOpen(false);
-    setPromotionData({
-      code: data.promotionCode,
-      discount: 0.88
-    });
   };
 
   const handleDelete = () => {
@@ -157,13 +114,13 @@ const OrderSumary = () => {
         <CardContent>
           <div className="mb-2 flex justify-between">
             <span className="text-gray-600">订单金额</span>
-            <span className="text-lg text-amber-500">
+            <span className="text-lg text-orange-600">
               ￥{summary.orderFee.toFixed(2)}
             </span>
           </div>
           {/* <div className="mb-2 flex justify-between">
             <span className="text-gray-600">账户余额</span>
-            <span className="text-lg text-amber-500">
+            <span className="text-lg text-orange-600">
               -￥{summary.countFee.toFixed(2)}
             </span>
           </div> */}
@@ -171,29 +128,14 @@ const OrderSumary = () => {
           <div className="mb-2 flex justify-between">
             <div className="flex text-gray-600">
               <div className="mr-1">优惠金额</div>
-              {promotionData.code ? (
-                <Tag
-                  label={`${promotionData.code}(${
-                    promotionData.discount * 10
-                  }折)`}
-                  onDelete={() => handleDelete()}
-                />
-              ) : (
-                <Button
-                  className="ml-1 h-6 px-2 text-xs"
-                  onClick={() => setIsOpen(true)}
-                >
-                  使用优惠码
-                </Button>
-              )}
             </div>
-            <span className="text-lg text-amber-500">
+            <span className="text-lg text-orange-600">
               {`-￥${summary.disCountFee.toFixed(2)}`}
             </span>
           </div>
           <div className="mt-4 flex justify-between  border-t py-4 text-lg ">
             <span className="font-bold text-gray-600">总计</span>
-            <span className="text-2xl font-bold text-amber-500">
+            <span className="text-2xl font-bold text-orange-600">
               ￥{summary.total.toFixed(2)}
             </span>
           </div>
@@ -230,7 +172,7 @@ const OrderSumary = () => {
         </CardContent>
         <CardFooter>
           <Button
-            className="h-12 w-full bg-orange-500 hover:bg-orange-400"
+            className="h-12 w-full bg-orange-600 hover:bg-orange-600 hover:shadow-lg"
             variant="default"
             onClick={onPay}
           >
@@ -239,36 +181,6 @@ const OrderSumary = () => {
         </CardFooter>
       </Card>
 
-      <Modal
-        isOpen={isOpen}
-        title="使用优惠码"
-        description=""
-        onClose={() => setIsOpen(false)}
-      >
-        <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="promotionCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>输入优惠码</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-4">
-              <Button type="submit">验证优惠码</Button>
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
-                取消
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </Modal>
       <Loading loading={loading} title="正在支付..." />
       {/* 居中显示通知 */}
     </div>

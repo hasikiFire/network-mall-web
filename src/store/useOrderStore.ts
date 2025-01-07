@@ -15,6 +15,8 @@ export interface IOrderItem {
   onlineIPs?: number;
   duration: number;
   payment: string;
+  couponCode?: string;
+  discount?: number;
 }
 
 const defaultValue = {
@@ -22,7 +24,9 @@ const defaultValue = {
   traffic: 0,
   onlineIPs: 0,
   duration: 1,
-  payment: 'alipay'
+  payment: 'alipay',
+  couponCode: '',
+  discount: 100
 };
 
 export const useOrderStore = create<State & Actions>((set) => ({

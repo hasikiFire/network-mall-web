@@ -63,9 +63,9 @@ export const defaultPayOptions = [
 
 /** TODO 从后台配置，可编辑 */
 export const defaultPlanConfig = {
-  IPConfigable: true,
+  IPConfigable: false,
   IPRange: [3, 6],
-  trafficConfigable: true,
+  trafficConfigable: false,
   trafficPrice: 0.5,
   payment: ['wxpay', 'alipay'],
   IPPrice: 10,
