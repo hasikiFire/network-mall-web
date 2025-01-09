@@ -3,10 +3,7 @@ import {
   getPayOrderItemDetail,
   postPayOrderCancel
 } from '@/api/pay-order-controller';
-import {
-  OrderStatusChinese,
-  PayStatusChinese
-} from '@/interface/apiTypes/PayOrder';
+import { OrderStatusChinese } from '@/interface/apiTypes/PayOrder';
 import { bToGB } from '@/lib/format';
 import dayjs from 'dayjs';
 /**
