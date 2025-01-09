@@ -1,5 +1,5 @@
 export interface PageReqDto {
-    pageNum?: number;
-    pageSize?: number;
-    fetchAll?: boolean;
+  pageNum?: number;
+  pageSize?: number;
+  fetchAll?: boolean;
 }

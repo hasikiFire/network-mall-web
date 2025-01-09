@@ -65,7 +65,7 @@ export function OverviewCards() {
 
   useEffect(() => {
     service.getRecordDetail().then((data) => {
-      setRecordDetail(null);
+      setRecordDetail(data);
       setLoading(false);
     });
   }, []);

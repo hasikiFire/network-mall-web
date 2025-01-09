@@ -9,7 +9,7 @@ import {
 } from './ui/card';
 const PlanQuestion: React.FC = () => {
   return (
-    <div className="text-main mt-16 flex w-full flex-col justify-center">
+    <div className="mt-16 flex w-full flex-col justify-center text-main">
       <div className="text-center text-3xl">常见问题</div>
       <Card className="mx-auto my-8 mb-16  flex   min-w-[50%]   space-y-2  shadow ">
         <CardHeader className="space-y-3">

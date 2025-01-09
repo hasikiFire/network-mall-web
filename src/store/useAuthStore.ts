@@ -16,6 +16,7 @@ export interface IUser {
   name?: string;
   image?: string;
   token: string;
+  userId: number;
 }
 
 export const useAuthStore = create<State & Actions>()(

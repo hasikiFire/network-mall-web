@@ -6,34 +6,36 @@ export type Actions = {
 };
 
 export type State = {
-  formData: IOrderItem;
+  orderData: IOrderItem;
 };
 
 export interface IOrderItem {
-  plan: string;
+  plan: number;
   traffic: number;
   onlineIPs?: number;
   duration: number;
-  payment: string;
+  payWay: string;
   couponCode?: string;
   discount?: number;
+  tempCouponCode?: string;
 }
 
 const defaultValue = {
-  plan: '',
+  plan: 0,
   traffic: 0,
   onlineIPs: 0,
   duration: 1,
-  payment: 'alipay',
+  payWay: 'alipay',
   couponCode: '',
-  discount: 100
+  discount: undefined,
+  tempCouponCode: ''
 };
 
 export const useOrderStore = create<State & Actions>((set) => ({
-  formData: { ...defaultValue },
+  orderData: { ...defaultValue },
 
-  reset: () => set(() => ({ formData: { ...defaultValue } })),
+  reset: () => set(() => ({ orderData: { ...defaultValue } })),
 
   setOrderData: (data: Partial<IOrderItem>) =>
-    set((state) => ({ formData: { ...state.formData, ...data } }))
+    set((state) => ({ orderData: { ...state.orderData, ...data } }))
 }));

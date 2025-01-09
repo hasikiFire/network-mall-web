@@ -23,7 +23,7 @@ export function getPackageGetList(params: PageReqDto) {
  * 购买套餐
  * /package/buy
  */
-export function postPackageBuy(input: PackageBuyReqDto) {
+export function buyPackage(input: PackageBuyReqDto) {
   return request<DeepRequired<RestRespPackageRespDto>>({
     url: `/package/buy`,
     method: 'POST',

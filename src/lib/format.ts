@@ -44,3 +44,7 @@ export const formatTraffic = (bytes: number, unit = true): string => {
 export const bToGB = (bytes: number): number => {
   return new Decimal(bytes).dividedBy(1024 * 1024 * 1024).toNumber();
 };
+
+export const GBToB = (bytes: number): number => {
+  return new Decimal(bytes).mul(1024 * 1024 * 1024).toNumber();
+};

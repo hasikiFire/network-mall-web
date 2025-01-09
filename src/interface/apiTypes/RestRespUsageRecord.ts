@@ -1,9 +1,9 @@
-import { type UsageRecord } from "..";
+import { UsageRecord } from './UsageRecord';
 
 export interface RestRespUsageRecord {
-    /** 错误码，0-成功 */
-    code?: number;
-    /** 响应消息 */
-    message?: string;
-    data?: UsageRecord;
+  /** 错误码，0-成功 */
+  code?: number;
+  /** 响应消息 */
+  message?: string;
+  data?: UsageRecord;
 }

@@ -32,7 +32,7 @@ export interface IPlanConfig {
   trafficConfigable: boolean;
   /** 每 10GB 多少钱 */
   trafficPrice: number;
-  payment: string[];
+  payWay: string[];
 }
 export const defaultMonthOptions = [
   { label: '1个月', value: 1 },
@@ -67,7 +67,7 @@ export const defaultPlanConfig = {
   IPRange: [3, 6],
   trafficConfigable: false,
   trafficPrice: 0.5,
-  payment: ['wxpay', 'alipay'],
+  payWay: ['wxpay', 'alipay'],
   IPPrice: 10,
   ipLimit: 3
 };
@@ -82,9 +82,8 @@ export interface IPlanItem {
   traffic: number; // 以GB为单位
   speedLimit: number;
 }
- 
 
-// 持久化要用 createStore https://zustand.docs.pmnd.rs/middlewares/persist,比较恶心，还要避免水合，手动水合
+// 持久化要用 createStore https://zustand.docs.pmnd.rs/middlewares/persist ,比较恶心，还要避免水合，手动水合
 export const usePlanStore = create<State & Actions>()((set) => ({
   planList: [],
   planConfig: defaultPlanConfig,
@@ -116,4 +115,3 @@ export const usePlanStore = create<State & Actions>()((set) => ({
     set(() => ({ planList: data }));
   }
 }));
- 

@@ -1,11 +1,11 @@
 // https://juejin.cn/post/6844903933320790024#heading-8
 
 export function setCookie(name: string, value: string) {
-  document.cookie = name + "=" + value;
+  document.cookie = name + '=' + value;
 }
 
 export function getCookie(name: string) {
-  const reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+  const reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
   const arr = document.cookie.match(reg);
   if (arr) {
     return arr[2];

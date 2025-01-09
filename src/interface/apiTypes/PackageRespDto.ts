@@ -1,5 +1,7 @@
-import { type PackageItem } from "..";
+import { PackageItem } from './PackageItem';
+import { PayOrder } from './PayOrder';
 
 export interface PackageRespDto {
-    item?: PackageItem;
+  packageItem?: PackageItem;
+  payOrder?: PayOrder;
 }

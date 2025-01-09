@@ -53,7 +53,8 @@ export default function UserAuthForm() {
         });
         login({
           email: data.email,
-          token: res.token
+          token: res.token,
+          userId: res.uid
         });
         toast.success('登录成功!');
 

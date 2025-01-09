@@ -1,9 +1,11 @@
-export interface PackageItem {
+export interface PayOrderItem {
   id?: number;
+  orderCode?: string;
+  packageId?: number;
+  packageUnit?: number;
   packageName?: string;
   packageDesc?: string;
   originalPrice?: number;
-  packageStatus?: number;
   salePrice?: number;
   discount?: number;
   discountStartDate?: string;

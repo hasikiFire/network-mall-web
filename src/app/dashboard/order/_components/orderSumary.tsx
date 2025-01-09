@@ -16,7 +16,11 @@ import Decimal from 'decimal.js';
 import { usePlanStore } from '@/store/usePlanStore';
 import { toast } from 'sonner';
 import Loading from '@/components/loaindg';
-
+import Tag from '@/components/ui/tag';
+import service from './service';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import { GBToB } from '@/lib/format';
 export interface ISumary {
   countFee: number;
   orderFee: number;
@@ -24,7 +28,9 @@ export interface ISumary {
   total: number;
 }
 const OrderSumary = () => {
-  const { formData, setOrderData } = useOrderStore();
+  const authStore = useAuthStore();
+  const router = useRouter();
+  const { orderData, setOrderData } = useOrderStore();
   const { planList, planConfig, payOptions } = usePlanStore();
   // const { theme } = useTheme();
 
@@ -34,32 +40,29 @@ const OrderSumary = () => {
     disCountFee: 0,
     total: 0
   });
-  const [promotionData, setPromotionData] = useState({
-    code: '',
-    discount: 0
-  });
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!formData) return;
-    const activePlan = planList?.find((v) => String(v.id) === formData?.plan);
+    if (!orderData) return;
+    const activePlan = planList?.find((v) => v.id === orderData?.plan);
     if (!activePlan) {
       return;
     }
 
     // 使用 Decimal 来进行高精度计算
-    let curTotal = new Decimal(activePlan.basePrice).mul(formData.duration);
-    if (planConfig.IPConfigable && formData.onlineIPs && activePlan.ipLimit) {
+    let curTotal = new Decimal(activePlan.basePrice).mul(orderData.duration);
+    if (planConfig.IPConfigable && orderData.onlineIPs && activePlan.ipLimit) {
       curTotal = curTotal.add(
         new Decimal(planConfig.IPPrice).mul(
-          formData.onlineIPs - activePlan.ipLimit
+          orderData.onlineIPs - activePlan.ipLimit
         )
       );
     }
-    if (planConfig?.trafficConfigable && formData.traffic) {
+    if (planConfig?.trafficConfigable && orderData.traffic) {
       curTotal = curTotal.add(
         new Decimal(planConfig.trafficPrice).mul(
-          formData.traffic - activePlan.traffic
+          orderData.traffic - activePlan.traffic
         )
       );
     }
@@ -67,9 +70,9 @@ const OrderSumary = () => {
 
     // 处理折扣
     let tempDisCount = 0;
-    if (promotionData.code) {
+    if (orderData?.couponCode) {
       tempDisCount = curTotal
-        .mul(new Decimal(1 - promotionData.discount))
+        .mul(new Decimal(1 - (orderData.discount ?? 0)))
         .toNumber();
     }
     curTotal = curTotal.sub(tempDisCount);
@@ -80,29 +83,41 @@ const OrderSumary = () => {
       orderFee: tempfee,
       total: curTotal.toNumber()
     }));
-  }, [formData, planList, promotionData]);
+  }, [orderData, planList, orderData]);
 
   const onChange = (v: string) => {
-    setOrderData({ payment: v });
+    setOrderData({ payWay: v });
   };
 
-  const handleDelete = () => {
-    setPromotionData({
-      code: '',
-      discount: 0
-    });
-  };
-
-  const onPay = () => {
+  const onPay = async () => {
     setLoading(true);
-    setTimeout(() => {
+    console.log('orderData: ', orderData);
+    const res = await service.buyPackageItem({
+      packageId: orderData.plan,
+      userId: authStore.user?.userId || 0,
+      // 如果超过最大安全整数会出现精度丢失问题，最好转换成string 
+      dataAllowance: GBToB(orderData.traffic),
+      deviceLimit: orderData.onlineIPs,
+      month: orderData.duration,
+      payWay: orderData.payWay,
+      couponCode: orderData.couponCode
+    });
+    if (res) {
       toast.success('支付成功', {
         richColors: true,
         className: 'text-lg',
         duration: 2000
       });
       setLoading(false);
-    }, 2000);
+      router.push('/dashboard');
+    } else {
+      toast.error('支付失败', {
+        richColors: true,
+        className: 'text-lg',
+        duration: 2000
+      });
+      setLoading(false);
+    }
   };
 
   return (
@@ -128,6 +143,9 @@ const OrderSumary = () => {
           <div className="mb-2 flex justify-between">
             <div className="flex text-gray-600">
               <div className="mr-1">优惠金额</div>
+              {orderData.couponCode && (
+                <Tag label={`${orderData?.discount}折`} />
+              )}
             </div>
             <span className="text-lg text-orange-600">
               {`-￥${summary.disCountFee.toFixed(2)}`}
@@ -143,14 +161,14 @@ const OrderSumary = () => {
           <div className="mt-2 border-t py-4 text-2xl font-bold">支付方式</div>
           <RadioGroup
             onValueChange={(v) => onChange(v)}
-            defaultValue={formData?.payment}
-            value={formData?.payment}
+            defaultValue={orderData?.payWay}
+            value={orderData?.payWay}
             className="flex flex-col flex-wrap gap-y-4"
           >
             {payOptions.map((v) => (
               <div
                 className={`flex  cursor-pointer  justify-between gap-y-4 space-y-0 rounded-md  border p-4 hover:bg-primary-foreground ${
-                  String(formData?.payment) === String(v.value)
+                  String(orderData?.payWay) === String(v.value)
                     ? 'border-primary  bg-primary-foreground  text-primary   '
                     : ''
                 }`}

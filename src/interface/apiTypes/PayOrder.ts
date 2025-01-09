@@ -1,0 +1,29 @@
+export interface PayOrder {
+  id?: number;
+  orderCode?: string;
+  tradeNo?: string;
+  userId?: number;
+  packageId?: number;
+  packageUnit?: number;
+  orderCreateTime?: string;
+  orderExpireTime?: string;
+  orderStatus?: string;
+  orderAmount?: number;
+  payAmount?: number;
+  orderRemark?: string;
+  payTime?: string;
+  payWay?: string;
+  paySeene?: string;
+  payStatus?: string;
+  couponCode?: string;
+  couponAmount?: number;
+  supplierId?: string;
+  refundNo?: string;
+  refundReqTime?: string;
+  refundTime?: string;
+  refundAmount?: number;
+  refundStatus?: string;
+  deleted?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}

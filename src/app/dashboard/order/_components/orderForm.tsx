@@ -21,10 +21,11 @@ import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import service, { IDiscount } from './service';
 
 // 定义表单验证规则
 const formSchema = z.object({
-  plan: z.string({
+  plan: z.number({
     required_error: '请选择订阅计划。'
   }),
   traffic: z.number().min(10, '流量最少为 10GB').max(600, '流量最多为 600GB'),
@@ -35,7 +36,7 @@ const formSchema = z.object({
   duration: z.number({
     required_error: '请选择购买时长。'
   }),
-  couponCode: z.string()
+  tempCouponCode: z.string()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -48,11 +49,15 @@ const OrderForm = () => {
   const activePlan = planList?.find((v) => v.id === Number(id));
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: orderStore.formData
+    defaultValues: orderStore.orderData
   });
 
   useEffect(() => {
     init();
+    return () => {
+      form.reset();
+      orderStore.reset();
+    };
   }, [id, period]);
 
   const init = async () => {
@@ -60,7 +65,7 @@ const OrderForm = () => {
     if (!activePlan) return;
     const newValues = {
       ...form.getValues(),
-      plan: id ?? '',
+      plan: Number(id ?? 0),
       duration: Number(period),
       traffic: activePlan?.traffic ?? 0,
       onlineIPs: activePlan?.ipLimit
@@ -77,19 +82,27 @@ const OrderForm = () => {
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅
   }, [form.watch]);
 
-  const handleApplyCoupon = () => {
-    if (!form.getValues('couponCode')) return;
-    if (form.getValues('couponCode') === 'Hasaki') {
-      //TODO 验证
-      orderStore.setOrderData({
-        couponCode: form.getValues('couponCode'),
-        discount: 0
+  const handleApplyCoupon = async () => {
+    if (!form.getValues('tempCouponCode')) return;
+    try {
+      const couponData = await service.CouponValidate({
+        couponCode: form.getValues('tempCouponCode')
       });
-    } else {
+      const content: IDiscount = JSON.parse(couponData?.content ?? '');
+      orderStore.setOrderData({
+        couponCode: form.getValues('tempCouponCode'),
+        discount: content.amount
+      });
+      toast.success('优惠码验证成功', {
+        richColors: true,
+        duration: 3000
+      });
+    } catch (e) {
       toast.error('优惠码无效', {
         richColors: true,
-        duration: 2000
+        duration: 3000
       });
+      console.error(e);
     }
   };
 
@@ -112,7 +125,7 @@ const OrderForm = () => {
                   <FormControl className="flex-1">
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={String(field.value)}
                       className="flex  flex-wrap gap-4"
                     >
                       {planList?.map((v) => (
@@ -129,14 +142,16 @@ const OrderForm = () => {
                           <FormLabel className=" ">
                             <div
                               className={`flex w-52 cursor-pointer  flex-col flex-wrap items-center rounded-md border p-4 shadow-md hover:bg-primary-foreground ${
-                                field.value === String(v.id)
+                                String(field.value) === String(v.id)
                                   ? 'border-primary  bg-primary-foreground  text-primary   '
                                   : ''
                               }`}
                             >
                               <div
                                 className={`mb-2  rounded-2xl  border-white   px-4  py-2  ${
-                                  field.value === String(v.id) ? '   ' : ''
+                                  String(field.value) === String(v.id)
+                                    ? '   '
+                                    : ''
                                 }`}
                               >
                                 {v.title}
@@ -252,7 +267,7 @@ const OrderForm = () => {
             )}
             <FormField
               control={form.control}
-              name="couponCode"
+              name="tempCouponCode"
               render={({ field }) => (
                 <FormItem className="flex space-y-0">
                   <FormLabel className="w-28 text-gray-600">优惠码</FormLabel>

@@ -1,9 +1,8 @@
-import { type UserLoginRespDto } from "..";
-
+import { UserLoginRespDto } from '..';
 export interface RestRespUserLoginRespDto {
-    /** 错误码，0-成功 */
-    code?: number;
-    /** 响应消息 */
-    message?: string;
-    data?: UserLoginRespDto;
+  /** 错误码，0-成功 */
+  code?: number;
+  /** 响应消息 */
+  message?: string;
+  data?: UserLoginRespDto;
 }

@@ -1,8 +1,10 @@
-export interface RestRespBoolean {
+import { Config } from './Config';
+
+export interface RestRespListConfig {
   /** 错误码，0-成功 */
   code?: number;
   /** 响应消息 */
   message?: string;
   /** 响应数据 */
-  data?: boolean;
+  data?: Config[];
 }

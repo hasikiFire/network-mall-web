@@ -122,7 +122,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
       {/* {isPopular && (
         <span className="mb-2 block text-sm font-black  ">🌟 推荐</span>
       )} */}
-      <div className="flex items-center mb-4  ">
+      <div className="mb-4 flex items-center  ">
         <span className="  mr-2 ">
           <svg
             viewBox="0 0 1024 1024"

@@ -1,9 +1,9 @@
-import { type PageRespDtoUserListRespDto } from "..";
+import { PageRespDtoUserListRespDto } from './PageRespDtoUserListRespDto';
 
 export interface RestRespPageRespDtoUserListRespDto {
-    /** 错误码，0-成功 */
-    code?: number;
-    /** 响应消息 */
-    message?: string;
-    data?: PageRespDtoUserListRespDto;
+  /** 错误码，0-成功 */
+  code?: number;
+  /** 响应消息 */
+  message?: string;
+  data?: PageRespDtoUserListRespDto;
 }

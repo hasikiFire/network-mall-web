@@ -3,7 +3,6 @@ import React from 'react';
 
 import OrderForm from './_components/orderForm';
 import OrderSumary from './_components/orderSumary';
-import { CouponCard } from './_components/coupon-card';
 
 const CartPage: React.FC = () => {
   return (

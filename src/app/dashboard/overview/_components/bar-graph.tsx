@@ -147,7 +147,7 @@ export function BarGraph() {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle className="flex justify-between">
             <div>使用记录</div>
-            <div className='flex gap-2'>
+            <div className="flex gap-2">
               <CalendarDateRangePicker />
               <Button>查询</Button>
             </div>

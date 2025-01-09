@@ -67,7 +67,7 @@ export function NumberInput({
         min={min}
         max={max}
         onChange={handleChange}
-        className="text-center no-arrows"
+        className="no-arrows text-center"
         onBlur={handleBlur}
       />
       <Button
