@@ -23,10 +23,14 @@ export default function OrdersPage() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
     service.getOrderList().then((data) => {
       setOrders(data || []);
     });
-  }, []);
+  };
 
   const handleViewDetail = async (order: PayOrder) => {
     const detail = await service.getOrderDetail(order.orderCode);
@@ -39,6 +43,7 @@ export default function OrdersPage() {
   const cancelOrder = async (order: PayOrder) => {
     const res = await service.cancelOrder(order.orderCode);
     if (res) {
+      init();
       toast.success('取消订单成功');
     }
   };

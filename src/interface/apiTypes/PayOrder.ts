@@ -142,7 +142,8 @@ export enum OrderStatus {
   Paid = 'paid', // 已支付
   Refunding = 'refunding', // 退款中
   Refunded = 'refunded', // 已退款
-  Closed = 'closed' // 订单关闭
+  Closed = 'closed', // 订单关闭
+  Canceled = 'canceled' // 订单取消
 }
 
 // 订单状态中文映射
@@ -151,7 +152,8 @@ export const OrderStatusChinese = {
   [OrderStatus.Paid]: '已支付',
   [OrderStatus.Refunding]: '退款中',
   [OrderStatus.Refunded]: '已退款',
-  [OrderStatus.Closed]: '订单关闭'
+  [OrderStatus.Closed]: '已关闭',
+  [OrderStatus.Canceled]: '已取消'
 };
 
 // 支付方式

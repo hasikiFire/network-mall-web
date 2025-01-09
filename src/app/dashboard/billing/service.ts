@@ -1,6 +1,7 @@
 import {
   getPayOrderList,
-  getPayOrderItemDetail
+  getPayOrderItemDetail,
+  postPayOrderCancel
 } from '@/api/pay-order-controller';
 import {
   OrderStatusChinese,
@@ -53,6 +54,8 @@ class Service {
   }
 
   async cancelOrder(orderCode: string) {
+    const res = await postPayOrderCancel({ orderCode });
+    if (res.code !== 200) return false;
     return true;
   }
 }

@@ -1,3 +1,5 @@
+import { RestRespBoolean } from '@/interface';
+import { CancelOrderReqDto } from '@/interface/apiTypes/CancelOrderReqDto';
 import { RestRespListPayOrder } from '@/interface/apiTypes/RestRespListPayOrder';
 import { RestRespPayOrderItem } from '@/interface/apiTypes/RestRespPayOrderItem';
 import { request } from '@/lib/request';
@@ -29,5 +31,17 @@ export function getPayOrderList(config?: AxiosRequestConfig) {
   return request<DeepRequired<RestRespListPayOrder>>({
     url: `/payOrder/list`,
     method: 'GET'
+  });
+}
+
+/**
+ * 取消订单
+ * /payOrder/cancel
+ */
+export function postPayOrderCancel(input: CancelOrderReqDto) {
+  return request<DeepRequired<RestRespBoolean>>({
+    url: `/payOrder/cancel`,
+    method: 'POST',
+    data: input
   });
 }
