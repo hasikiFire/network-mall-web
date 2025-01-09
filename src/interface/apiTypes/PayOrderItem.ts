@@ -16,4 +16,6 @@ export interface PayOrderItem {
   deleted?: number;
   createdAt?: string;
   updatedAt?: string;
+  _dataAllowance?: string;
+  _packageUnit?: string;
 }

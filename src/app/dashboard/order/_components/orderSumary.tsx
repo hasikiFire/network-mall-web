@@ -90,12 +90,16 @@ const OrderSumary = () => {
   };
 
   const onPay = async () => {
+    if (summary.total !== 0) {
+      toast.warning('支付功能还在开发中~~');
+      return;
+    }
     setLoading(true);
     console.log('orderData: ', orderData);
     const res = await service.buyPackageItem({
       packageId: orderData.plan,
       userId: authStore.user?.userId || 0,
-      // 如果超过最大安全整数会出现精度丢失问题，最好转换成string 
+      // 如果超过最大安全整数会出现精度丢失问题，最好转换成string
       dataAllowance: GBToB(orderData.traffic),
       deviceLimit: orderData.onlineIPs,
       month: orderData.duration,
