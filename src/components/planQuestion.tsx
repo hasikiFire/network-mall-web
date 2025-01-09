@@ -16,13 +16,7 @@ const PlanQuestion: React.FC = () => {
           <CardTitle className="text-main">
             已有使用中的套餐，还能购买新套餐嘛？
           </CardTitle>
-          <CardDescription className="mt-8">
-            不行
-            <br />
-            1. 流量余额 = 新套餐流量 +旧套餐流量余额
-            <br />
-            2. 过期日期 = 新套餐过期日期
-          </CardDescription>
+          <CardDescription className="mt-8">不行</CardDescription>
           {/* <CardDescription className="mt-8">
             可以，购买新套餐后：
             <br />

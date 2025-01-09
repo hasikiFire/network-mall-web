@@ -1,6 +1,6 @@
 export interface UserLoginRespDto {
   /** 用户ID */
-  uid?: number;
+  userID?: number;
   /** 用户token */
   token?: string;
 }

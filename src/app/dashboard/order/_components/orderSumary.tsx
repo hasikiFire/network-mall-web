@@ -45,7 +45,9 @@ const OrderSumary = () => {
 
   useEffect(() => {
     if (!orderData) return;
-    const activePlan = planList?.find((v) => v.id === orderData?.plan);
+    const activePlan = planList?.find(
+      (v) => String(v.id) === String(orderData?.plan)
+    );
     if (!activePlan) {
       return;
     }
@@ -94,32 +96,36 @@ const OrderSumary = () => {
       toast.warning('支付功能还在开发中~~');
       return;
     }
-    setLoading(true);
-    console.log('orderData: ', orderData);
-    const res = await service.buyPackageItem({
-      packageId: orderData.plan,
-      userId: authStore.user?.userId || 0,
-      // 如果超过最大安全整数会出现精度丢失问题，最好转换成string
-      dataAllowance: GBToB(orderData.traffic),
-      deviceLimit: orderData.onlineIPs,
-      month: orderData.duration,
-      payWay: orderData.payWay,
-      couponCode: orderData.couponCode
-    });
-    if (res) {
-      toast.success('支付成功', {
-        richColors: true,
-        className: 'text-lg',
-        duration: 2000
+    try {
+      setLoading(true);
+      console.log('orderData: ', orderData);
+      const res = await service.buyPackageItem({
+        packageId: Number(orderData.plan),
+        userId: authStore.user?.userId || 0,
+        // 如果超过最大安全整数会出现精度丢失问题，最好转换成string
+        dataAllowance: GBToB(orderData.traffic),
+        deviceLimit: orderData.onlineIPs,
+        month: orderData.duration,
+        payWay: orderData.payWay,
+        couponCode: orderData.couponCode
       });
-      setLoading(false);
-      router.push('/dashboard');
-    } else {
-      toast.error('支付失败', {
-        richColors: true,
-        className: 'text-lg',
-        duration: 2000
-      });
+      if (res) {
+        toast.success('支付成功', {
+          richColors: true,
+          className: 'text-lg',
+          duration: 2000
+        });
+        setLoading(false);
+        router.push('/dashboard');
+      } else {
+        toast.error('支付失败', {
+          richColors: true,
+          className: 'text-lg',
+          duration: 2000
+        });
+        setLoading(false);
+      }
+    } catch (error) {
       setLoading(false);
     }
   };

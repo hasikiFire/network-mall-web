@@ -77,6 +77,7 @@ const OrderForm = () => {
   // 使用 useEffect 监听表单变化
   useEffect(() => {
     const subscription = form.watch((values) => {
+      console.log('values: ', values);
       orderStore.setOrderData(values);
     });
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅
@@ -136,7 +137,7 @@ const OrderForm = () => {
                           <FormControl>
                             <RadioGroupItem
                               value={`${v.id}`}
-                              className="  hidden"
+                              className=" hidden"
                             ></RadioGroupItem>
                           </FormControl>
                           <FormLabel className=" ">
@@ -160,7 +161,9 @@ const OrderForm = () => {
                                 <span className="mr-0.5 inline-block text-4xl font-bold text-amber-500">
                                   {v.basePrice}
                                 </span>
-                                <span className="text-base ">元</span>
+                                <span className="text-base text-amber-500">
+                                  元
+                                </span>
                               </div>
                             </div>
                           </FormLabel>

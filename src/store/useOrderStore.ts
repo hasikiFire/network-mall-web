@@ -10,7 +10,7 @@ export type State = {
 };
 
 export interface IOrderItem {
-  plan: number;
+  plan: number | string;
   traffic: number;
   onlineIPs?: number;
   duration: number;
