@@ -276,7 +276,7 @@ const OrderForm = () => {
                   <FormLabel className="w-28 text-gray-600">优惠码</FormLabel>
                   <FormControl>
                     <div className="flex items-center gap-2">
-                      <Input {...field} placeholder="选填" className="w-52" />
+                      <Input {...field} placeholder="必填" className="w-52" />
                       <Button
                         type="button"
                         variant="default"
