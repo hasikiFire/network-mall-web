@@ -31,6 +31,7 @@ import * as React from 'react';
 import { Icons } from '../icons';
 import { useAuthStore } from '@/store/useAuthStore';
 import { NavItem } from '@/types';
+import { cn } from '@/lib/utils';
 
 export const company = {
   name: 'Hasaki',
@@ -61,13 +62,13 @@ export default function AppSidebar() {
       <SidebarContent className="overflow-x-hidden">
         <SidebarGroup>
           <NetSidebarMenu navItems={homeNavItems}></NetSidebarMenu>
-          <SidebarGroupLabel className="text-sm">我的</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm px-4 text-gray-500">我的</SidebarGroupLabel>
           <NetSidebarMenu navItems={storeNavItems}></NetSidebarMenu>
-          <SidebarGroupLabel className="text-sm">教程</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm px-4 text-gray-500">教程</SidebarGroupLabel>
           <NetSidebarMenu navItems={useNavItems}></NetSidebarMenu>
           {isAdmin && (
             <>
-              <SidebarGroupLabel className="text-sm">管理</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-sm px-4">管理</SidebarGroupLabel>
               <NetSidebarMenu navItems={managerNavItems}></NetSidebarMenu>
             </>
           )}
@@ -210,14 +211,14 @@ const NetSidebarMenu = ({ navItems }: { navItems: NavItem[] }) => {
             >
               <Link
                 href={item.url}
-                className={
-                  pathname === item.url
-                    ? 'text  !bg-primary-foreground !text-primary'
-                    : 'text-lg'
-                }
+                className={cn(
+                  'px-6 py-6',
+                  pathname === item.url &&
+                    'text  !bg-primary-foreground !text-primary'
+                )}
               >
                 <Icon size={24} />
-                <span>{item.title}</span>
+                <span className="text-base">{item.title}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

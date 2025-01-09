@@ -7,8 +7,8 @@ export function OverviewSkeleton() {
       {[
         { title: '剩余时长', icon: Timer },
         { title: '剩余流量', icon: Network },
-        { title: '在线设备数', icon: Laptop2 },
-        { title: '钱包余额', icon: Wallet }
+        { title: '在线设备数', icon: Laptop2 }
+        // { title: '钱包余额', icon: Wallet }
       ].map((item, index) => (
         <Card key={index}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

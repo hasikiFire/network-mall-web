@@ -138,6 +138,12 @@ export const homeNavItems: NavItem[] = [
 ];
 
 export const storeNavItems: NavItem[] = [
+  {
+    title: '账单',
+    url: '/dashboard/billing',
+    icon: 'billing',
+    isActive: true
+  },
   // {
   //   title: '订阅中心',
   //   url: '/dashboard/subscribe',
@@ -151,7 +157,7 @@ export const storeNavItems: NavItem[] = [
     icon: 'repeat',
     isActive: false,
     items: [] // No child items
-  },
+  }
 
   // {
   //   title: '我的钱包',
@@ -159,13 +165,6 @@ export const storeNavItems: NavItem[] = [
   //   icon: 'billing',
   //   isActive: true
   // },
-
-  {
-    title: '账单',
-    url: '/dashboard/billing',
-    icon: 'billing',
-    isActive: true
-  }
 ];
 export const managerNavItems: NavItem[] = [
   {

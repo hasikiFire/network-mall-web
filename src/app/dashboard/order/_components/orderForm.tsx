@@ -25,9 +25,10 @@ import service, { IDiscount } from './service';
 
 // 定义表单验证规则
 const formSchema = z.object({
-  plan: z.number({
-    required_error: '请选择订阅计划。'
-  }),
+  plan: z.union([
+    z.number({ required_error: '请选择订阅计划。' }),
+    z.string({ required_error: '请选择订阅计划。' })
+  ]),
   traffic: z.number().min(10, '流量最少为 10GB').max(600, '流量最多为 600GB'),
   onlineIPs: z
     .number()
@@ -77,7 +78,6 @@ const OrderForm = () => {
   // 使用 useEffect 监听表单变化
   useEffect(() => {
     const subscription = form.watch((values) => {
-      console.log('values: ', values);
       orderStore.setOrderData(values);
     });
     return () => subscription.unsubscribe(); // 组件卸载时清理订阅

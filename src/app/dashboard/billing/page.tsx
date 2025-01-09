@@ -68,7 +68,7 @@ export default function OrdersPage() {
     {
       accessorKey: 'orderAmount',
       header: '订单金额',
-      cell: ({ row }) => `￥${row.original.payAmount}`
+      cell: ({ row }) => <div className='text-orange-600 text-base font-bold'>{`￥${row.original.payAmount}`}</div> 
     },
     {
       accessorKey: '_orderStatus',

@@ -35,7 +35,7 @@ const CARDS_CONFIG: {
     icon: Network,
     getValue: (data?: UsageRecord | null) =>
       data
-        ? `${formatTraffic(data.consumedDataTransfer ?? 0)} / ${formatTraffic(
+        ? `${formatTraffic(data._remainingTraffic ?? 0)} / ${formatTraffic(
             data.dataAllowance ?? 0
           )}`
         : '无'
@@ -62,18 +62,20 @@ const CARDS_CONFIG: {
 export function OverviewCards() {
   const [recordDetail, setRecordDetail] = useState<UsageRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [clashLink, setClashLink] = useState('');
 
   useEffect(() => {
     service.getRecordDetail().then((data) => {
       setRecordDetail(data);
       setLoading(false);
+      service.getSubscribeLink().then((link) => {
+        setClashLink(link);
+      });
     });
   }, []);
   const onClashSubscribe = () => {
-    service.getSubscribeLink().then((link) => {
-      navigator.clipboard.writeText(link);
-      toast.success('已复制订阅链接');
-    });
+    navigator.clipboard.writeText(clashLink);
+    toast.success('已复制订阅链接');
   };
 
   if (loading) {

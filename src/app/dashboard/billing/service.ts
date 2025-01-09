@@ -16,13 +16,13 @@ import dayjs from 'dayjs';
  */
 function formatPackageUnit(packageUnit: number): string {
   if (packageUnit === 1) {
-    return '1月';
+    return '1个月';
   } else if (packageUnit === 6) {
     return '半年';
   } else if (packageUnit === 12) {
-    return '一年';
+    return '1年';
   } else {
-    return `${packageUnit}月`;
+    return `${packageUnit}个月`;
   }
 }
 

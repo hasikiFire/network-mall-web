@@ -23,24 +23,13 @@ export const formatTraffic = (bytes: number, unit = true): string => {
   // 自动判断小数点位数
   const value = size.toNumber(); // 转换为 JavaScript 数字
   if (!unit) return value.toString();
-  const isInteger = Number.isInteger(value); // 判断是否为整数
-  const decimalPlaces = (value.toString().split('.')[1] || '').length; // 获取小数位数
 
-  let formattedValue: string;
-
-  if (isInteger) {
-    // 如果是整数，不显示小数点
-    formattedValue = value.toFixed(0);
-  } else if (decimalPlaces > 2) {
-    // 如果小数位数超过 2 位，显示 2 位小数
-    formattedValue = value.toFixed(2);
-  } else {
-    // 否则，保留原始小数位数
-    formattedValue = value.toString();
-  }
+  // 格式化数值，去掉末尾的 0
+  const formattedValue = parseFloat(value.toFixed(3)).toString();
 
   return `${formattedValue} ${units[unitIndex]}`;
 };
+
 export const bToGB = (bytes: number): number => {
   return new Decimal(bytes).dividedBy(1024 * 1024 * 1024).toNumber();
 };

@@ -25,7 +25,7 @@ export function StatusTag({ status }: StatusTagProps) {
   return (
     <span
       className={cn(
-        'rounded-full border px-2.5 py-0.5 text-xs font-medium',
+        'rounded-full border px-2.5 py-0.5 text-sm font-medium font-bold',
         getStatusStyle(status)
       )}
     >

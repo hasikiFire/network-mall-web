@@ -15,4 +15,5 @@ export interface UsageRecord {
   updatedAt?: string;
   deleted?: number;
   _endTime?: string;
+  _remainingTraffic?: number;
 }
