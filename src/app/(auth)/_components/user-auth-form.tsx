@@ -33,7 +33,6 @@ export default function UserAuthForm() {
   const login = useAuthStore((state) => state.login);
   const service = new Service();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
     email: searchParams.get('email') || '',
@@ -60,7 +59,7 @@ export default function UserAuthForm() {
 
         signIn('credentials', {
           email: data.email,
-          callbackUrl: callbackUrl ?? '/dashboard'
+          redirectTo: '/dashboard'
         });
       } catch (e) {
         console.error(e);
