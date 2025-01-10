@@ -10,16 +10,48 @@ type BreadcrumbItem = {
 
 // This allows to add custom title as well
 const routeMapping: Record<string, BreadcrumbItem[]> = {
-  '/dashboard': [{ title: 'Dashboard', link: '/dashboard' }],
-  '/dashboard/employee': [
-    { title: 'Dashboard', link: '/dashboard' },
-    { title: 'Employee', link: '/dashboard/employee' }
+  // Home routes
+  '/dashboard': [{ title: '首页', link: '/dashboard' }],
+  '/dashboard/overview': [{ title: '首页', link: '/dashboard/overview' }],
+  '/dashboard/store': [{ title: '商店', link: '/dashboard/store' }],
+
+  // Store related routes
+  '/dashboard/billing': [
+    { title: '商店', link: '/dashboard/store' },
+    { title: '账单', link: '/dashboard/billing' }
   ],
-  '/dashboard/product': [
-    { title: 'Dashboard', link: '/dashboard' },
-    { title: 'Product', link: '/dashboard/product' }
+  '/dashboard/subscribe': [
+    { title: '商店', link: '/dashboard/store' },
+    { title: '订阅中心', link: '/dashboard/subscribe' }
+  ],
+  '/dashboard/records': [
+    { title: '商店', link: '/dashboard/store' },
+    { title: '使用记录', link: '/dashboard/records' }
+  ],
+
+  // Manager routes
+  '/manager/server': [
+    { title: '管理', link: '/manager' },
+    { title: '服务器管理', link: '/manager/server' }
+  ],
+  '/manager/user': [
+    { title: '管理', link: '/manager' },
+    { title: '用户管理', link: '/manager/user' }
+  ],
+  '/manager/pacakage': [
+    { title: '管理', link: '/manager' },
+    { title: '套餐管理', link: '/manager/pacakage' }
+  ],
+
+  // User related routes
+  '/dashboard/tutorial': [
+    { title: '使用', link: '/dashboard' },
+    { title: '使用教程', link: '/dashboard/tutorial' }
+  ],
+  '/dashboard/detect': [
+    { title: '使用', link: '/dashboard' },
+    { title: '安全审计', link: '/dashboard/detect' }
   ]
-  // Add more custom mappings as needed
 };
 
 export function useBreadcrumbs() {

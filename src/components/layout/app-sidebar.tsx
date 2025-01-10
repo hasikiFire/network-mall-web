@@ -48,13 +48,12 @@ export default function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
             <company.logo className="size-4" />
-          </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="flex items-center truncate font-semibold">
-              {company.name}
-            </span>
+          </div> */}
+          <div className="flex      flex-1 items-center pl-6   truncate text-2xl font-semibold leading-tight">
+            {company.name}
+
             {/* <span className="truncate text-xs">{company.plan}</span> */}
           </div>
         </div>
@@ -62,13 +61,19 @@ export default function AppSidebar() {
       <SidebarContent className="overflow-x-hidden">
         <SidebarGroup>
           <NetSidebarMenu navItems={homeNavItems}></NetSidebarMenu>
-          <SidebarGroupLabel className="text-sm px-4 text-gray-500">我的</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-4 text-sm text-gray-500">
+            我的
+          </SidebarGroupLabel>
           <NetSidebarMenu navItems={storeNavItems}></NetSidebarMenu>
-          <SidebarGroupLabel className="text-sm px-4 text-gray-500">教程</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-4 text-sm text-gray-500">
+            教程
+          </SidebarGroupLabel>
           <NetSidebarMenu navItems={useNavItems}></NetSidebarMenu>
           {isAdmin && (
             <>
-              <SidebarGroupLabel className="text-sm px-4">管理</SidebarGroupLabel>
+              <SidebarGroupLabel className="px-4 text-sm">
+                管理
+              </SidebarGroupLabel>
               <NetSidebarMenu navItems={managerNavItems}></NetSidebarMenu>
             </>
           )}

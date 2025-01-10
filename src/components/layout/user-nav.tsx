@@ -12,8 +12,9 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { useAuthStore } from '@/store/useAuthStore';
-import { User } from 'lucide-react';
+import { User, User2 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 export function UserNav() {
   const { data: session } = useSession();
   const authStore = useAuthStore();
@@ -28,8 +29,8 @@ export function UserNav() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-8 w-8">
-              <User size={32}></User>
+            <Avatar className="h-8 w-8 flex items-center justify-center border-main">
+              <User2 size={30}></User2>
               {/* <AvatarImage
                 src={session.user?.image ?? ''}
                 alt={session.user?.name ?? ''}
@@ -49,22 +50,20 @@ export function UserNav() {
               </p>
             </div>
           </DropdownMenuLabel>
-          {/* <DropdownMenuSeparator /> */}
-          {/* <DropdownMenuGroup>
-            <DropdownMenuItem>
-              Profile
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Billing
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            {/* <DropdownMenuItem>
+              <Link href="/">预览页</Link>
+            </DropdownMenuItem> */}
+            <Link href="/dashboard/overview">
+              <DropdownMenuItem>首页</DropdownMenuItem>
+            </Link>
+            {/* <DropdownMenuItem>
               Settings
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuItem>New Team</DropdownMenuItem>
-          </DropdownMenuGroup> */}
+            <DropdownMenuItem>New Team</DropdownMenuItem> */}
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={logout}>
             退出登录
