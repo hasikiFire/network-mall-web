@@ -100,7 +100,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
   const adjustedPrice = new Decimal(basePrice)
     .times(period === '12' ? 12 : period === '3' ? 3 : 1)
     .toNumber();
-  const adjustedDate = period === '12' ? 360 : period === '3' ? 90 : 30;
+  const adjustedDate = period === '12' ? 365 : period === '3' ? 90 : 30;
   const router = useRouter();
 
   const isLogin = useAuthStore((state) => state.isLogin);
@@ -166,7 +166,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
           <span>{`套餐时长：${adjustedDate} 天`}</span>
-        </li>{' '}
+        </li>
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
           <span>{`速率限制：${

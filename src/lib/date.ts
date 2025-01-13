@@ -1,12 +1,19 @@
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration'; // 引入 duration 插件
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import duration from 'dayjs/plugin/duration';
 
-// 扩展 dayjs 功能
+dayjs.extend(timezone);
 dayjs.extend(duration);
+dayjs.extend(utc);
 
-export const getRemainingTime = (purchaseEndTime: string): string => {
-  const endTime = dayjs(purchaseEndTime); // 转换为 dayjs 对象
-  const now = dayjs(); // 当前时间
+export const getRemainingTime = (purchaseEndTime: string) => {
+  // 解析时间并指定时区
+  const endTime = dayjs(purchaseEndTime).tz('Asia/Shanghai'); // 直接解析为本地时间
+  const now = dayjs().tz('Asia/Shanghai'); // 当前时间，指定时区
+
+  console.log('结束时间:', endTime.format('YYYY-MM-DD HH:mm:ss'));
+  console.log('当前时间:', now.format('YYYY-MM-DD HH:mm:ss'));
 
   // 如果结束时间早于当前时间，返回 "已过期"
   if (endTime.isBefore(now)) {
@@ -16,18 +23,16 @@ export const getRemainingTime = (purchaseEndTime: string): string => {
   // 计算剩余时间
   const remainingDuration = dayjs.duration(endTime.diff(now));
 
-  // 获取剩余时间的总天数、小时、分钟、秒
+  // 获取剩余时间的总天数、小时
   const totalDays = Math.floor(remainingDuration.asDays()); // 总天数
-  const hours = remainingDuration.hours(); // 剩余小时
-  // const minutes = remainingDuration.minutes(); // 剩余分钟
-  // const seconds = remainingDuration.seconds(); // 剩余秒
+  const hours = Math.floor(remainingDuration.asHours() % 24); // 剩余小时
+  const minutes = Math.floor(remainingDuration.asMinutes() % 60); // 剩余分钟
 
-  // 拼接剩余时间
-  let result = '';
-  if (totalDays > 0) result += `${totalDays}天`;
-  if (hours > 0) result += `${hours}小时`;
-  // if (minutes > 0) result += `${minutes}分钟`;
-  // if (seconds > 0) result += `${seconds}秒`;
+  // 如果没有天数，只返回小时和分钟
+  if (totalDays === 0) {
+    return `${hours}小时${minutes}分钟`;
+  }
 
-  return result || '0秒'; // 如果剩余时间为 0，返回 "0秒"
+  // 如果有天数，返回天数、小时和分钟
+  return `${totalDays}天${hours}小时`;
 };
