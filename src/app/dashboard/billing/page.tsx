@@ -68,7 +68,9 @@ export default function OrdersPage() {
     {
       accessorKey: 'orderAmount',
       header: '订单金额',
-      cell: ({ row }) => <div className='text-orange-600 text-base font-bold'>{`￥${row.original.payAmount}`}</div> 
+      cell: ({ row }) => (
+        <div className="text-base font-bold text-orange-600">{`￥${row.original.payAmount}`}</div>
+      )
     },
     {
       accessorKey: '_orderStatus',
@@ -162,7 +164,9 @@ export default function OrdersPage() {
               <div className="grid grid-cols-4 items-center gap-4">
                 <span className="font-medium text-gray-600">速度限制:</span>
                 <span className="col-span-3">
-                  {`${selectedOrder.speedLimit}MB/s` || '无限制'}
+                  {selectedOrder.speedLimit
+                    ? `${selectedOrder.speedLimit}MB/s`
+                    : '无限制'}
                 </span>
               </div>
             </div>
