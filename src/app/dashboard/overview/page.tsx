@@ -1,7 +1,6 @@
 'use client';
 import PageContainer from '@/components/layout/page-container';
 import { OverviewCards } from './_components/overview-cards';
-import { QuickLinks } from './_components/quick-links';
 
 export default function OverViewPage() {
   return (

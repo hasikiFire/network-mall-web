@@ -21,6 +21,15 @@ import service from './service';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { GBToB } from '@/lib/format';
+import QRCode from 'qrcode';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
+
 export interface ISumary {
   countFee: number;
   orderFee: number;
@@ -42,6 +51,7 @@ const OrderSumary = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   useEffect(() => {
     if (!orderData) return;
@@ -91,14 +101,15 @@ const OrderSumary = () => {
     setOrderData({ payWay: v });
   };
 
-  const onPay = async () => {
-    if (summary.total !== 0) {
-      toast.warning('支付功能还在开发中~~');
-      return;
+  const onOpenChange = (open: boolean) => {
+    if (!open) {
+      setQrCodeUrl('');
     }
+  };
+
+  const onPay = async () => {
     try {
       setLoading(true);
-      console.log('orderData: ', orderData);
       const res = await service.buyPackageItem({
         packageId: Number(orderData.plan),
         userId: authStore.user?.userId || 0,
@@ -110,15 +121,27 @@ const OrderSumary = () => {
         couponCode: orderData.couponCode
       });
       if (res) {
-        toast.success('支付成功', {
-          richColors: true,
-          className: 'text-lg',
-          duration: 2000
-        });
+        // toast.success('支付成功', {
+        //   richColors: true,
+        //   className: 'text-lg',
+        //   duration: 2000
+        // });
         setLoading(false);
-        router.push('/dashboard');
+        // 生成二维码并转换为 Data URL
+        QRCode.toDataURL(
+          res.payUrl,
+          { width: 200, margin: 2 },
+          (err: any, url: React.SetStateAction<string>) => {
+            if (err) {
+              console.error('Failed to generate QR code:', err);
+              return;
+            }
+            setQrCodeUrl(url);
+          }
+        );
+        // router.push('/dashboard');
       } else {
-        toast.error('支付失败', {
+        toast.error('下单失败', {
           richColors: true,
           className: 'text-lg',
           duration: 2000
@@ -204,12 +227,52 @@ const OrderSumary = () => {
             variant="default"
             onClick={onPay}
           >
-            立即支付
+            立即下单
           </Button>
         </CardFooter>
+
+        <Dialog open={!!qrCodeUrl} onOpenChange={onOpenChange}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>支付订单</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center justify-center">
+              {qrCodeUrl && (
+                <Image
+                  src={qrCodeUrl}
+                  alt=""
+                  className="mb-4 h-48 w-48 rounded-lg"
+                  width={200}
+                  height={200}
+                ></Image>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                className="h-12 w-full bg-orange-600 hover:bg-orange-600 hover:shadow-lg"
+                variant="default"
+                onClick={() => {
+                  setQrCodeUrl('');
+                }}
+              >
+                关闭
+              </Button>
+              <Button
+                className="h-12 w-full bg-orange-600 hover:bg-orange-600 hover:shadow-lg"
+                variant="default"
+                onClick={() => {
+                  // TODO
+                  setQrCodeUrl('');
+                }}
+              >
+                我已支付
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </Card>
 
-      <Loading loading={loading} title="正在支付..." />
+      <Loading loading={loading} title="正在下单..." />
       {/* 居中显示通知 */}
     </div>
   );

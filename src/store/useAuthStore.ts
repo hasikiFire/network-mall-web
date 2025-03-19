@@ -25,14 +25,28 @@ export const useAuthStore = create<State & Actions>()(
       user: undefined,
       isLogin: false,
       login: (userData: IUser) => {
-        localStorage.setItem('token', userData.token ?? '');
-        set(() => ({ user: userData, isLogin: true })); // 登录函数
+        sessionStorage.setItem('token', userData.token ?? ''); // 使用 sessionStorage
+        set(() => ({ user: userData, isLogin: true }));
       },
       logout: () => {
-        localStorage.removeItem('token');
-        set(() => ({ user: undefined, isLogin: false })); // 登录函数
+        sessionStorage.removeItem('token'); // 使用 sessionStorage
+        set(() => ({ user: undefined, isLogin: false }));
       }
     }),
-    { name: 'auth-store' }
+    {
+      name: 'auth-store', // 存储的名称
+      storage: {
+        getItem: (name) => {
+          const value = sessionStorage.getItem(name); // 使用 sessionStorage
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value)); // 使用 sessionStorage
+        },
+        removeItem: (name) => {
+          sessionStorage.removeItem(name); // 使用 sessionStorage
+        }
+      }
+    }
   )
 );
