@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
-  console.log('request.cookies: ', request.cookies, request.cookies.size);
+  // console.log('request.cookies: ', request.cookies.size);
   if (!session?.user) {
     return NextResponse.redirect(new URL('/', request.url));
   }
