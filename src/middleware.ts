@@ -7,10 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
-  console.log(' middleware session: ', session);
-  const cookie = request.cookies.get('authjs.session-token');
-  console.log('middleware cookie: ', cookie);
-  if (!cookie || !session?.user) {
+  console.log('request.cookies: ', request.cookies, request.cookies.size);
+  if (!session?.user) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   return NextResponse.next();
