@@ -1,4 +1,4 @@
-import { buyPackage } from '@/api';
+import { buyPackage, pollOrder } from '@/api';
 import {
   getUserCouponValidate,
   GetUserCouponValidateParams
@@ -20,6 +20,13 @@ class Service {
 
   async buyPackageItem(params: PackageBuyReqDto) {
     const res = await buyPackage(params);
+    if (res.code === 200) {
+      return res.data;
+    }
+  }
+
+  async pollOrder(params: { orderCode: string }) {
+    const res = await pollOrder(params);
     if (res.code === 200) {
       return res.data;
     }

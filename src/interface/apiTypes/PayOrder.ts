@@ -138,12 +138,13 @@ export interface PayOrder {
 }
 // 订单状态
 export enum OrderStatus {
-  WaitPay = 'wait_pay', // 待支付
-  Paid = 'paid', // 已支付
-  Refunding = 'refunding', // 退款中
-  Refunded = 'refunded', // 已退款
-  Closed = 'closed', // 订单关闭
-  Canceled = 'canceled' // 订单取消
+  WaitPay = 'WAIT_PAY', // 待支付
+  Paid = 'PAID', // 已支付
+  Refunding = 'REFUNDING', // 退款中
+  Refunded = 'REFUNDED', // 已退款
+  Closed = 'CLOSED', // 已关闭
+  Canceled = 'CANCELED', // 已取消
+  COMPLETE = 'COMPLETE' // 已完成
 }
 
 // 订单状态中文映射
@@ -153,7 +154,8 @@ export const OrderStatusChinese = {
   [OrderStatus.Refunding]: '退款中',
   [OrderStatus.Refunded]: '已退款',
   [OrderStatus.Closed]: '已关闭',
-  [OrderStatus.Canceled]: '已取消'
+  [OrderStatus.Canceled]: '已取消',
+  [OrderStatus.COMPLETE]: '已完成'
 };
 
 // 支付方式

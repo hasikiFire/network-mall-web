@@ -5,7 +5,7 @@ import {
   CardFooter,
   CardHeader
 } from '@/components/ui/card';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import wxIcon from '@/style/image/wx.svg';
 import alippayIcon from '@/style/image/alippay.svg';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -25,11 +25,13 @@ import QRCode from 'qrcode';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-
+import { PackageRespDto } from '@/interface';
+import { getUsageRecordDetail } from '@/api';
 export interface ISumary {
   countFee: number;
   orderFee: number;
@@ -51,7 +53,12 @@ const OrderSumary = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [loadingTitle, setloadingTitle] = useState('');
   const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [payRes, setPayRes] = useState<PackageRespDto>();
+  const pollOrderInterVal = useRef<any>();
+  const usageInterVal = useRef<any>();
 
   useEffect(() => {
     if (!orderData) return;
@@ -97,20 +104,75 @@ const OrderSumary = () => {
     }));
   }, [orderData, planList, orderData]);
 
+  useEffect(() => {
+    if (payRes) {
+      setTimeout(() => {
+        pollOrderstatus();
+      }, 5000);
+    }
+  }, [payRes]);
+
   const onChange = (v: string) => {
     setOrderData({ payWay: v });
   };
 
   const onOpenChange = (open: boolean) => {
     if (!open) {
-      setQrCodeUrl('');
+      setIsOpen(false);
+    }
+  };
+
+  const pollOrderstatus = (isClick = false) => {
+    service.pollOrder({ orderCode: payRes?.orderNo ?? '' }).then((data) => {
+      if (data?.status === '1') {
+        toast.success('支付成功', {
+          richColors: true,
+          className: 'text-lg',
+          duration: 1000
+        });
+        setIsOpen(false);
+        setLoading(true);
+        setloadingTitle('正在创建套餐...');
+        setTimeout(() => {
+          checkUsageRecordStatus();
+        }, 1000);
+        clearTimeout(pollOrderInterVal.current);
+      } else {
+        if (isClick) {
+          toast.error('未查询到支付记录，请确认是否支付', {
+            richColors: true,
+            className: 'text-lg',
+            duration: 3000
+          });
+        } else {
+          pollOrderInterVal.current = setTimeout(() => {
+            pollOrderstatus();
+          }, 1000);
+        }
+      }
+    });
+  };
+
+  const checkUsageRecordStatus = async () => {
+    const res = await getUsageRecordDetail();
+
+    if (res.data) {
+      clearTimeout(usageInterVal.current);
+      toast.success('套餐创建成功', {
+        richColors: true,
+        className: 'text-lg',
+        duration: 1000
+      });
+      router.push('/dashboard');
+    } else {
+      usageInterVal.current = setTimeout(checkUsageRecordStatus, 1000);
     }
   };
 
   const onPay = async () => {
     try {
       setLoading(true);
-      const res = await service.buyPackageItem({
+      const data = await service.buyPackageItem({
         packageId: Number(orderData.plan),
         userId: authStore.user?.userId || 0,
         // 如果超过最大安全整数会出现精度丢失问题，最好转换成string
@@ -120,35 +182,38 @@ const OrderSumary = () => {
         payWay: orderData.payWay,
         couponCode: orderData.couponCode
       });
-      if (res) {
-        // toast.success('支付成功', {
-        //   richColors: true,
-        //   className: 'text-lg',
-        //   duration: 2000
-        // });
-        setLoading(false);
-        // 生成二维码并转换为 Data URL
-        QRCode.toDataURL(
-          res.payUrl,
-          { width: 200, margin: 2 },
-          (err: any, url: React.SetStateAction<string>) => {
-            if (err) {
-              console.error('Failed to generate QR code:', err);
-              return;
-            }
-            setQrCodeUrl(url);
-          }
-        );
-        // router.push('/dashboard');
-      } else {
+      if (!data) {
         toast.error('下单失败', {
           richColors: true,
           className: 'text-lg',
           duration: 2000
         });
         setLoading(false);
+        return;
       }
+      setloadingTitle('正在下单，请稍等...');
+      setLoading(false);
+      setIsOpen(true);
+      setPayRes(data);
+
+      QRCode.toDataURL(
+        data.payUrl,
+        { width: 200, margin: 2 },
+        (err: any, url: React.SetStateAction<string>) => {
+          if (err) {
+            console.error('Failed to generate QR code:', err);
+            return;
+          }
+          setQrCodeUrl(url);
+        }
+      );
+      // router.push('/dashboard');
     } catch (error) {
+      toast.error('下单失败', {
+        richColors: true,
+        className: 'text-lg',
+        duration: 2000
+      });
       setLoading(false);
     }
   };
@@ -231,10 +296,17 @@ const OrderSumary = () => {
           </Button>
         </CardFooter>
 
-        <Dialog open={!!qrCodeUrl} onOpenChange={onOpenChange}>
+        <Dialog open={isOpen}>
           <DialogContent className="max-w-2xl">
-            <DialogHeader>
+            <DialogHeader className="flex justify-between">
               <DialogTitle>支付订单</DialogTitle>
+
+              <div className="text-gray-600">
+                请用支付宝扫码支付：
+                <span className=" text-orange-600">
+                  {summary.total.toFixed(2)}元
+                </span>
+              </div>
             </DialogHeader>
             <div className="flex flex-col items-center justify-center">
               {qrCodeUrl && (
@@ -248,31 +320,32 @@ const OrderSumary = () => {
               )}
             </div>
             <DialogFooter>
-              <Button
-                className="h-12 w-full bg-orange-600 hover:bg-orange-600 hover:shadow-lg"
-                variant="default"
-                onClick={() => {
-                  setQrCodeUrl('');
-                }}
-              >
-                关闭
-              </Button>
-              <Button
-                className="h-12 w-full bg-orange-600 hover:bg-orange-600 hover:shadow-lg"
-                variant="default"
-                onClick={() => {
-                  // TODO
-                  setQrCodeUrl('');
-                }}
-              >
-                我已支付
-              </Button>
+              <div className="w-full ">
+                <Button
+                  className="mb-4  h-12 w-full  "
+                  variant="default"
+                  onClick={() => {
+                    pollOrderstatus(true);
+                  }}
+                >
+                  我已支付
+                </Button>
+                <Button
+                  className="h-12  w-full  "
+                  variant="secondary"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  关闭
+                </Button>
+              </div>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </Card>
 
-      <Loading loading={loading} title="正在下单..." />
+      <Loading loading={loading} title={loadingTitle} />
       {/* 居中显示通知 */}
     </div>
   );
