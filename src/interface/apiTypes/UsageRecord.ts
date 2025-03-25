@@ -16,4 +16,6 @@ export interface UsageRecord {
   deleted?: number;
   _endTime?: string;
   _remainingTraffic?: number;
+  _nextResetDate?: string;
+  nextResetDate?: string;
 }

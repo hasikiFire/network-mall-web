@@ -38,7 +38,9 @@ const CARDS_CONFIG: {
         ? `${formatTraffic(data._remainingTraffic ?? 0)} / ${formatTraffic(
             data.dataAllowance ?? 0
           )}`
-        : '无'
+        : '无',
+    getSubValue: (data?: UsageRecord | null) =>
+      data ? `重置流量时间: ${data._nextResetDate ?? '-'}` : '无'
   },
   {
     title: '在线设备数',

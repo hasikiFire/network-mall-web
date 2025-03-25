@@ -161,7 +161,7 @@ const PlanCardItem: React.FC<PlanCardItemProps> = ({
       <ul className="my-4 space-y-4 text-sm  ">
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />
-          <span>{`可用流量：${traffic} GB`}</span>
+          <span>{`可用流量：${traffic} GB/月`}</span>
         </li>
         <li className="flex items-center space-x-2">
           <CheckIcon isLast={isLast} />

@@ -168,12 +168,13 @@ export const storeNavItems: NavItem[] = [
 ];
 export const managerNavItems: NavItem[] = [
   {
-    title: '服务器管理',
-    url: '/manager/server',
+    title: '使用记录管理',
+    url: '/manager/usageRecord',
     icon: 'user',
     isActive: false,
     items: [] // No child items
   },
+
   {
     title: '用户管理',
     url: '/manager/user',
@@ -187,7 +188,21 @@ export const managerNavItems: NavItem[] = [
     icon: 'user',
     isActive: false,
     items: [] // No child items
+  },
+  {
+    title: '订单管理',
+    url: '/manager/orders',
+    icon: 'user',
+    isActive: false,
+    items: [] // No child items
   }
+  // {
+  //   title: '服务器管理',
+  //   url: '/manager/server',
+  //   icon: 'user',
+  //   isActive: false,
+  //   items: [] // No child items
+  // }
 ];
 
 export const useNavItems: NavItem[] = [

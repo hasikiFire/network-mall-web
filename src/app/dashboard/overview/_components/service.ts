@@ -1,5 +1,6 @@
 import { getUsageRecordDetail, getUserGetSubscribe } from '@/api';
 import { getRemainingTime } from '@/lib/date';
+import dayjs from 'dayjs';
 import Decimal from 'decimal.js';
 
 class Service {
@@ -12,6 +13,9 @@ class Service {
       data._remainingTraffic = new Decimal(data.dataAllowance)
         .sub(data.consumedDataTransfer)
         .toNumber();
+      data._nextResetDate = dayjs(data.nextResetDate).add(1, 'h').format(
+        'YYYY-MM-DD HH:mm:ss'
+      );
     }
 
     return data;

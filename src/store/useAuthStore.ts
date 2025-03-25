@@ -1,22 +1,19 @@
+import { UserInfoRespDto } from '@/interface';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type Actions = {
-  login: (data: IUser) => void;
+  login: (token: string) => void;
   logout: () => void;
+  setUser: (userData: IUser) => void;
 };
 export type State = {
   user?: IUser;
   isLogin: boolean;
 };
 
-export interface IUser {
-  email: string;
-  role?: string;
-  name?: string;
-  image?: string;
-  token: string;
-  userId: number;
+export interface IUser extends UserInfoRespDto {
+  token?: string;
 }
 
 export const useAuthStore = create<State & Actions>()(
@@ -24,13 +21,16 @@ export const useAuthStore = create<State & Actions>()(
     (set) => ({
       user: undefined,
       isLogin: false,
-      login: (userData: IUser) => {
-        sessionStorage.setItem('token', userData.token ?? ''); // 使用 sessionStorage
-        set(() => ({ user: userData, isLogin: true }));
+      login: (token: string) => {
+        sessionStorage.setItem('token', token ?? ''); // 使用 sessionStorage
+        set(() => ({ isLogin: true }));
       },
       logout: () => {
         sessionStorage.removeItem('token'); // 使用 sessionStorage
         set(() => ({ user: undefined, isLogin: false }));
+      },
+      setUser: (userData: IUser) => {
+        set(() => ({ user: userData }));
       }
     }),
     {

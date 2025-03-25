@@ -31,6 +31,7 @@ type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
   const login = useAuthStore((state) => state.login);
+  const setUser = useAuthStore((state) => state.setUser);
   const service = new Service();
   const searchParams = useSearchParams();
   const [loading, startTransition] = useTransition();
@@ -50,13 +51,11 @@ export default function UserAuthForm() {
           email: data.email,
           password: data.password
         });
-        login({
-          email: data.email,
-          token: res.token,
-          userId: res.userID
-        });
-        toast.success('登录成功!');
 
+        login(res.token);
+        toast.success('登录成功!');
+        const userInfo = await service.getUserInfo({ userId: res.userID });
+        setUser({ token: res.token, ...userInfo });
         signIn('credentials', {
           email: data.email,
           redirectTo: '/dashboard'

@@ -12,9 +12,6 @@ export const getRemainingTime = (purchaseEndTime: string) => {
   const endTime = dayjs(purchaseEndTime).tz('Asia/Shanghai'); // 直接解析为本地时间
   const now = dayjs().tz('Asia/Shanghai'); // 当前时间，指定时区
 
-  console.log('结束时间:', endTime.format('YYYY-MM-DD HH:mm:ss'));
-  console.log('当前时间:', now.format('YYYY-MM-DD HH:mm:ss'));
-
   // 如果结束时间早于当前时间，返回 "已过期"
   if (endTime.isBefore(now)) {
     return '已过期';
