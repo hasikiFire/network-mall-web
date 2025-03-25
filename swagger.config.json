@@ -1,6 +1,6 @@
 {
-  "docsUrl": "https:/www.example.com/v3/api-docs",
-  "includeTags": ["usage-record-controller"],
+  "docsUrl": "http://localhost:8080/v3/api-docs",
+  "includeTags": ["admin-controller"],
   "excludeTags": ["bot-callback-controller"],
   "axiosInstanceUrl": "@/lib/request",
   "prefix": "",

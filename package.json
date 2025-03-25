@@ -13,7 +13,8 @@
     "lint": "next lint",
     "format": "prettier . --write",
     "prepare": "husky",
-    "tsc": "npx tsc --noEmit"
+    "tsc": "npx tsc --noEmit",
+    "doc": "zerone api"
   },
   "lint-staged": {
     "**/*": [

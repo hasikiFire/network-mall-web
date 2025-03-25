@@ -11,10 +11,17 @@ import {
   UserEditDto,
   PackageEditReqDto,
   RestRespVoid,
-  DeepRequired
+  DeepRequired,
+  RestRespUsageRecord,
+  PageReqDto,
+  RestRespPageRespDtoPayOrder,
+  RestRespPageRespDtoUsageRecordListRespDto,
+  UsageRecordEditReqDto,
+  UsageRecordListReqDto
 } from '@/interface';
 import { AxiosRequestConfig } from 'axios';
 import { request } from '@/lib/request';
+
 /**
  * 获取所有套餐列表
  * /admin/pacakge/getAlllist
@@ -119,4 +126,51 @@ export interface GetAdminUserGetListParams {
 
 export interface PostAdminUserChangeStatusParams {
   status: string;
+}
+/**
+ * 获取支付订单列表
+ * /admin/payOrder/list
+ */
+export function getAdminPayOrderList(
+  params: PageReqDto,
+  config?: AxiosRequestConfig
+) {
+  return request<DeepRequired<RestRespPageRespDtoPayOrder>>({
+    url: '/admin/payOrder/list',
+    method: 'GET',
+    params: params,
+    ...config
+  });
+}
+
+/**
+ * 查询使用记录列表
+ * /admin/usageRecord/getList
+ */
+export function getAdminUsageRecordGetList(
+  params: UsageRecordListReqDto,
+  config?: AxiosRequestConfig
+) {
+  return request<DeepRequired<RestRespPageRespDtoUsageRecordListRespDto>>({
+    url: '/admin/usageRecord/getList',
+    method: 'GET',
+    params: params,
+    ...config
+  });
+}
+
+/**
+ * 更新使用记录
+ * /admin/usageRecord/update
+ */
+export function postAdminUsageRecordUpdate(
+  input: UsageRecordEditReqDto,
+  config?: AxiosRequestConfig
+) {
+  return request<DeepRequired<RestRespUsageRecord>>({
+    url: '/admin/usageRecord/update',
+    method: 'POST',
+    data: input,
+    ...config
+  });
 }

@@ -10,7 +10,7 @@ import {
   RestRespVoid,
   UserLoginReqDto,
   UsersendEmailCodeDto
-} from '../../interface';
+} from '@/interface';
 import { type AxiosRequestConfig } from 'axios';
 
 /**
