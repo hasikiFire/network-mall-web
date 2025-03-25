@@ -16,6 +16,24 @@ import service from './service';
 import { cn } from '@/lib/utils';
 import { StatusTag } from '@/components/status-tag';
 import { toast } from 'sonner';
+import { text } from 'stream/consumers';
+
+export const getStatusStyle = (status: string) => {
+  switch (status) {
+    case '未开始':
+      return 'bg-blue-50 text-blue-600 border-blue-100';
+    case '生效中':
+      return 'bg-green-50 text-green-600 border-green-100';
+    case '流量已用尽':
+      return 'bg-orange-50 text-orange-600 border-orange-100';
+    case '已过期':
+      return 'bg-gray-50 text-gray-600 border-gray-100';
+    case '已取消':
+      return 'bg-red-50 text-red-600 border-red-100';
+    default:
+      return 'bg-gray-50 text-gray-600 border-gray-100';
+  }
+};
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<PayOrder[]>([]);
@@ -75,7 +93,12 @@ export default function OrdersPage() {
     {
       accessorKey: '_orderStatus',
       header: '订单状态',
-      cell: ({ row }) => <StatusTag status={row.original._orderStatus || ''} />
+      cell: ({ row }) => (
+        <StatusTag
+          className={getStatusStyle(row.original._orderStatus || '')}
+          text={row.original._orderStatus}
+        />
+      )
     },
     {
       accessorKey: 'createdAt',

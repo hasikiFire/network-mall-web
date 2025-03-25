@@ -30,10 +30,24 @@ export const formatTraffic = (bytes: number, unit = true): string => {
   return `${formattedValue} ${units[unitIndex]}`;
 };
 
-export const bToGB = (bytes: number): number => {
-  return new Decimal(bytes).dividedBy(1024 * 1024 * 1024).toNumber();
+export const bToGB = (bytes: number | string) => {
+  if (!bytes) return 0;
+  return parseFloat(
+    new Decimal(bytes ?? 0)
+      .dividedBy(1024 * 1024 * 1024)
+      .toNumber()
+      .toFixed(3)
+      .toString()
+  );
 };
 
-export const GBToB = (bytes: number): number => {
-  return new Decimal(bytes).mul(1024 * 1024 * 1024).toNumber();
+export const GBToB = (bytes: number | string) => {
+  if (!bytes) return 0;
+  return parseFloat(
+    new Decimal(bytes ?? 0)
+      .mul(1024 * 1024 * 1024)
+      .toNumber()
+      .toFixed(3)
+      .toString()
+  );
 };
