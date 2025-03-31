@@ -172,6 +172,7 @@ const OrderSumary = () => {
   const onPay = async () => {
     try {
       setLoading(true);
+
       const data = await service.buyPackageItem({
         packageId: Number(orderData.plan),
         userId: authStore.user?.userId || 0,
@@ -183,11 +184,11 @@ const OrderSumary = () => {
         couponCode: orderData.couponCode
       });
       if (!data) {
-        toast.error('下单失败', {
-          richColors: true,
-          className: 'text-lg',
-          duration: 2000
-        });
+        // toast.error('下单失败', {
+        //   richColors: true,
+        //   className: 'text-lg',
+        //   duration: 2000
+        // });
         setLoading(false);
         return;
       }
@@ -208,12 +209,7 @@ const OrderSumary = () => {
         }
       );
       // router.push('/dashboard');
-    } catch (error) {
-      toast.error('下单失败', {
-        richColors: true,
-        className: 'text-lg',
-        duration: 2000
-      });
+    } finally {
       setLoading(false);
     }
   };
@@ -297,7 +293,11 @@ const OrderSumary = () => {
         </CardFooter>
 
         <Dialog open={isOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent
+            autoFocus={false}
+            onClose={() => setIsOpen(false)}
+            className="home-bg-primary max-w-2xl "
+          >
             <DialogHeader className="flex justify-between">
               <DialogTitle>支付订单</DialogTitle>
 
@@ -308,25 +308,26 @@ const OrderSumary = () => {
                 </span>
               </div>
             </DialogHeader>
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center ">
               {qrCodeUrl && (
                 <Image
                   src={qrCodeUrl}
                   alt=""
                   className="mb-4 h-48 w-48 rounded-lg"
-                  width={200}
-                  height={200}
+                  width={240}
+                  height={240}
                 ></Image>
               )}
             </div>
             <DialogFooter>
               <div className="w-full ">
                 <Button
-                  className="mb-4  h-12 w-full  "
+                  className="mb-4  h-12 w-full bg-orange-600 hover:bg-orange-600 hover:shadow-lg "
                   variant="default"
                   onClick={() => {
                     pollOrderstatus(true);
                   }}
+                  autoFocus={false}
                 >
                   我已支付
                 </Button>
