@@ -19,6 +19,7 @@ import * as z from 'zod';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useRouter } from 'next/navigation';
 import Service from './service';
 
 const formSchema = z.object({
@@ -30,6 +31,7 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const setUser = useAuthStore((state) => state.setUser);
   const service = new Service();
@@ -43,6 +45,11 @@ export default function UserAuthForm() {
     resolver: zodResolver(formSchema),
     defaultValues
   });
+
+  const onForgetPassword = () => {
+    const email = form.getValues('email');
+    router.push(`/resetPassword?email=${email}`);
+  };
 
   const onSubmit = async (data: UserFormValue) => {
     startTransition(async () => {
@@ -86,7 +93,7 @@ export default function UserAuthForm() {
                     disabled={loading}
                     {...field}
                   />
-                </FormControl>{' '}
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -96,7 +103,17 @@ export default function UserAuthForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>密码</FormLabel>
+                <FormLabel>
+                  <div className="mt-4 flex justify-between">
+                    <span>密码</span>
+                    <span
+                      className="cursor-pointer text-blue-500"
+                      onClick={onForgetPassword}
+                    >
+                      忘记密码？
+                    </span>
+                  </div>
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="password"

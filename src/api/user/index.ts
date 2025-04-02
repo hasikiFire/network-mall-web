@@ -12,6 +12,7 @@ import {
   UsersendEmailCodeDto
 } from '@/interface';
 import { type AxiosRequestConfig } from 'axios';
+import { UserResetPassword } from '@/interface/apiTypes/UserResetPassword';
 
 /**
  * 用户注册接口
@@ -93,5 +94,17 @@ export function getUserGetSubscribe() {
   return request<DeepRequired<RestRespString>>({
     url: `/user/getSubscribe`,
     method: 'GET'
+  });
+}
+
+/**
+ * 获取订阅链接
+ * /user/getSubscribe
+ */
+export function resetPassword(input: UserResetPassword) {
+  return request<DeepRequired<RestRespString>>({
+    url: `/user/resetPassword`,
+    method: 'POST',
+    data: input
   });
 }

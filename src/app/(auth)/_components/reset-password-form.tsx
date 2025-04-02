@@ -47,17 +47,14 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    console.log('onSubmit data: ', data);
-
     startTransition(async () => {
       try {
-        await service.register({
-          // name: data.name,
+        await service.resetPsw({
           email: data.email,
           password: data.password,
           velCode: data.code
         });
-        toast.success('注册成功!!!');
+        toast.success('修改密码成功！');
         setTimeout(() => {
           router.push(`/login?email=${data.email}`);
         });
@@ -86,7 +83,7 @@ export default function UserAuthForm() {
       try {
         await service.getEmailCode({
           email: form.getValues('email'),
-          type: 'REGISTER'
+          type: 'UPDATE_PASSWORD'
         });
         toast.success('发送成功');
       } catch (e) {
@@ -102,24 +99,6 @@ export default function UserAuthForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-3"
         >
-          {/* <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel required>昵称</FormLabel>
-                <FormControl>
-                  <Input
-                    type="name"
-                    placeholder="请输入您的昵称"
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
           <FormField
             control={form.control}
             name="email"
@@ -176,7 +155,7 @@ export default function UserAuthForm() {
                   <div className="flex">
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="输入密码"
+                      placeholder="输入新密码"
                       disabled={loading}
                       {...field}
                       className="flex-1"
@@ -202,18 +181,9 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-
-          <Button disabled={loading} className="w-full" type="submit">
-            注册
+          <Button disabled={loading} className="mt-16  w-full" type="submit">
+            修改密码
           </Button>
-          <div className="mt-4 text-center">
-            <div className="text-gray-600">
-              已有账户?
-              <Link href="/login" className="text-blue-600 hover:underline">
-                点击登录
-              </Link>
-            </div>
-          </div>
         </form>
       </Form>
     </>
