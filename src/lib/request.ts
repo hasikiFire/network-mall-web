@@ -14,7 +14,7 @@ const handleInvalidToken = () => {
   // 确保在客户端环境中调用
   if (typeof window !== 'undefined') {
     toast.error('登录信息过期, 请重新登录');
-    sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
     // Router.push('/login'); // You should only use "next/router" on the client side of your app.
     window.location.href = '/login'; // 根据你的路由调整路径
   }
@@ -24,7 +24,7 @@ const handleInvalidToken = () => {
 instance.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       config.headers = {
         Authorization: `Bearer ${token}`,
         token: `${token}`,

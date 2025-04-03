@@ -18,7 +18,7 @@ import { StatusTag } from '@/components/status-tag';
 import { toast } from 'sonner';
 import { text } from 'stream/consumers';
 
-export const getStatusStyle = (status: string) => {
+const getStatusStyle = (status: string) => {
   switch (status) {
     case '未开始':
       return 'bg-blue-50 text-blue-600 border-blue-100';

@@ -22,11 +22,11 @@ export const useAuthStore = create<State & Actions>()(
       user: undefined,
       isLogin: false,
       login: (token: string) => {
-        sessionStorage.setItem('token', token ?? ''); // 使用 sessionStorage
+        localStorage.setItem('token', token ?? ''); // 使用 localStorage
         set(() => ({ isLogin: true }));
       },
       logout: () => {
-        sessionStorage.removeItem('token'); // 使用 sessionStorage
+        localStorage.removeItem('token'); // 使用 localStorage
         set(() => ({ user: undefined, isLogin: false }));
       },
       setUser: (userData: IUser) => {
@@ -37,14 +37,14 @@ export const useAuthStore = create<State & Actions>()(
       name: 'auth-store', // 存储的名称
       storage: {
         getItem: (name) => {
-          const value = sessionStorage.getItem(name); // 使用 sessionStorage
+          const value = localStorage.getItem(name); // 使用 localStorage
           return value ? JSON.parse(value) : null;
         },
         setItem: (name, value) => {
-          sessionStorage.setItem(name, JSON.stringify(value)); // 使用 sessionStorage
+          localStorage.setItem(name, JSON.stringify(value)); // 使用 localStorage
         },
         removeItem: (name) => {
-          sessionStorage.removeItem(name); // 使用 sessionStorage
+          localStorage.removeItem(name); // 使用 localStorage
         }
       }
     }
