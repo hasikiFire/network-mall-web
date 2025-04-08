@@ -23,11 +23,9 @@ export default function Page() {
       <div className="flex h-full items-center bg-white p-4 lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome to hasaki! 🚀
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight">忘记密码?</h1>
             <p className="text-sm text-muted-foreground">
-              请注册您的账号开始体验！
+              输入注册邮箱,我们会给您发送验证码帮助您重置密码
             </p>
           </div>
           <ResetPasswordForm />
