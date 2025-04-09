@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import Header from '@/components/header';
 import PlanCard from '@/components/planCard';
-import { Loading } from '@/components/loading';
+import Loading from '@/components/loading';
 import { fetchPlanList } from '@/api/server';
 
 export default async function HomePage() {

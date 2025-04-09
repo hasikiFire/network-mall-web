@@ -10,7 +10,7 @@ type LoadingProps = {
   title?: string;
 };
 
-const Loading: React.FC<LoadingProps> = ({
+const Loading2: React.FC<LoadingProps> = ({
   loading,
   color = colors.light.primary, // 默认主题色
   size = 50,
@@ -27,4 +27,4 @@ const Loading: React.FC<LoadingProps> = ({
   );
 };
 
-export default Loading;
+export default Loading2;

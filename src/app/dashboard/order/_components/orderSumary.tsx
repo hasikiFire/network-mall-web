@@ -15,7 +15,7 @@ import { z } from 'zod';
 import Decimal from 'decimal.js';
 import { usePlanStore } from '@/store/usePlanStore';
 import { toast } from 'sonner';
-import Loading from '@/components/loaindg';
+import Loading from '@/components/Loading2';
 import Tag from '@/components/ui/tag';
 import service from './service';
 import { useRouter } from 'next/navigation';

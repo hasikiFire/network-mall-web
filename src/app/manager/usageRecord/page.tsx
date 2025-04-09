@@ -20,6 +20,8 @@ import { useState, useEffect } from 'react';
 import { DataTable } from '@/components/ui/table/data-table';
 import service from './service';
 import { StatusTag } from '@/components/status-tag';
+import { RefreshAndFilter } from './_components/refresh-and-filter'; // 新增组件
+import Loading from '@/components/loading';
 
 const statusStylesConfig: Record<PurchaseStatus, string> = {
   0: 'bg-blue-50 text-blue-600 border-blue-100',
@@ -28,15 +30,16 @@ const statusStylesConfig: Record<PurchaseStatus, string> = {
   3: 'bg-gray-50 text-gray-600 border-gray-100',
   4: 'bg-red-50 text-red-600 border-red-100'
 };
+
 const columns: ColumnDef<UsageRecordListRespDto>[] = [
   {
     accessorKey: 'id',
     header: 'ID'
   },
-  {
-    accessorKey: 'orderCode',
-    header: '订单号'
-  },
+  // {
+  //   accessorKey: 'orderCode',
+  //   header: '订单号'
+  // },
   {
     accessorKey: 'userName',
     header: '用户名称'
@@ -113,36 +116,53 @@ const columns: ColumnDef<UsageRecordListRespDto>[] = [
 ];
 export default function UsageRecordsPage() {
   const [data, setData] = useState<PageRespDtoUsageRecordListRespDto>();
-
   const [params, setParams] = useState<UsageRecordListReqDto>({
     pageNum: 1,
-    pageSize: 10
+    pageSize: 20
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getUsageRecord();
   }, [params]);
+
   const getUsageRecord = async () => {
-    const data = await service.getAllUsageRecordList(params);
-    setData(data);
+    try {
+      setIsLoading(true);
+      const data = await service.getAllUsageRecordList(params);
+      setData(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // const handleSubmit = async (values: UsageRecordEditReqDto) => {
-  //   try {
-  //     setParams({ ...params, ...values });
-  //     router.push('/usage-records');
-  //   } catch (error) {
-  //     console.error('Failed to update record:', error);
-  //   }
-  // };
+  const handleRefresh = () => {
+    getUsageRecord();
+  };
 
-  if (!data || !data.list?.length) return <div>Loading...</div>;
+  const handleFilterChange = (filterValues: any) => {
+    setParams({ ...params, ...filterValues });
+  };
+
+  if (!data || !data.list?.length) {
+    return <Loading />;
+  }
+
   return (
     <div className="container mx-auto py-10">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">使用记录</h1>
+        <RefreshAndFilter
+          onRefresh={handleRefresh}
+          onFilterChange={handleFilterChange}
+        />
       </div>
-      <DataTable columns={columns} data={data.list ?? []} totalItems={0} />
+      <DataTable
+        columns={columns}
+        data={data.list ?? []}
+        totalItems={0}
+        loading={isLoading}
+      />
     </div>
   );
 }
