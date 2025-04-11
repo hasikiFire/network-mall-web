@@ -47,7 +47,7 @@ export function getAdminUserGetList(params: GetAdminUserGetListParams) {
     url: `/admin/user/getList`,
     method: 'GET',
     params: {
-      ...params.params
+      ...params
     }
   });
 }
