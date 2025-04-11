@@ -1,86 +1,103 @@
-// Request.ts
+// lib/request.ts
 import axios, {
-  AxiosError,
   AxiosRequestConfig,
+  AxiosError,
   AxiosRequestHeaders
 } from 'axios';
 import { toast } from 'sonner';
-// 定义响应数据的类型（可扩展）
 
+const isServer = typeof window === 'undefined';
+
+// 创建统一实例
 const instance = axios.create({
   timeout: 30 * 1000
+  // baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  // withCredentials: !isServer // 客户端自动携带cookie
 });
-const handleInvalidToken = () => {
-  // 确保在客户端环境中调用
-  if (typeof window !== 'undefined') {
-    toast.error('登录信息过期, 请重新登录');
-    localStorage.removeItem('token');
-    // Router.push('/login'); // You should only use "next/router" on the client side of your app.
-    window.location.href = '/login'; // 根据你的路由调整路径
+
+// 服务端请求处理器
+const getServerToken = async () => {
+  if (!isServer) return;
+
+  try {
+    const { cookies } = await import('next/headers');
+    // 读取的是当前请求的 Cookie 头信息
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+    return token;
+  } catch (error) {
+    return;
   }
 };
 
-// 请求拦截
-instance.interceptors.request.use(
-  (config) => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      config.headers = {
-        Authorization: `Bearer ${token}`,
-        token: `${token}`,
-        'access-token': `${token}`,
-
-        ...config.headers
-      } as unknown as AxiosRequestHeaders;
-      config.url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${config.url}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+const handleInvalidToken = () => {
+  if (!isServer) {
+    toast.error('登录信息过期，请重新登录');
+    localStorage.removeItem('token');
+    window.location.href = '/login';
   }
-);
+};
 
-// 响应拦截
+// 请求拦截器
+instance.interceptors.request.use(async (config) => {
+  const serverToken = await getServerToken();
+
+  const token = isServer ? serverToken : localStorage.getItem('token');
+  config.headers = {
+    ...config.headers,
+
+    Authorization: `Bearer ${token}`,
+    token: `${token}`,
+    'access-token': `${token}`
+  } as unknown as AxiosRequestHeaders;
+
+  config.url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${config.url}`;
+  return config;
+});
+
+// 响应拦截器
 instance.interceptors.response.use(
-  (res) => {
-    const skipErrorHandler = (res.config as any)?.skipErrorHandler;
+  (response) => {
+    const skipError = (response.config as any)?.skipErrorHandler;
+    const data = response.data as any;
 
-    if (
-      res.data.code !== undefined &&
-      res.data.code !== 0 &&
-      res.data.code !== 200 &&
-      !skipErrorHandler
-    ) {
-      if (
-        (res.data.msg || res.data.message)?.includes('无效用户') ||
-        res.data.code === 401
-      ) {
+    // 成功状态码处理
+    if ([0, 200].includes(data?.code) || skipError) {
+      return data;
+    }
+
+    // 业务错误处理
+    const errorMessage = data?.msg || data?.message || '请求失败';
+
+    // 只在客户端显示提示
+    if (!isServer) {
+      toast.error(errorMessage);
+
+      if (data.code === 401) {
         handleInvalidToken();
-        return Promise.reject(res.data);
-      } else {
-        toast.error(res.data.msg || res.data.message);
-        return Promise.reject(res.data);
       }
     }
-    return Promise.resolve(res.data);
-  },
-  (error: AxiosError<{ code: number; message?: string }>) => {
-    const skipErrorHandler = (error.config as any)?.skipErrorHandler;
 
-    if (error.response?.status === 401 && !skipErrorHandler) {
-      handleInvalidToken();
-      return Promise.reject(error);
+    return Promise.reject(data);
+  },
+  (error: AxiosError) => {
+    const skipError = (error.config as any)?.skipErrorHandler;
+
+    // 网络错误处理
+    if (!isServer && !skipError) {
+      const message = (error.response?.data as any)?.message || error.message;
+      toast.error(message || '网络请求异常');
     }
-    if (!skipErrorHandler) {
-      toast.error(error.response?.data?.message || error.message || '请求失败');
-    }
+
     return Promise.reject(error);
   }
 );
 
-type Request = <T = unknown>(
-  config: AxiosRequestConfig & { skipErrorHandler?: boolean }
+// 类型增强
+type RequestMethod = <T = any>(
+  config: AxiosRequestConfig & {
+    skipErrorHandler?: boolean;
+  }
 ) => Promise<T>;
 
-export const request = instance.request as Request;
+export const request = instance.request as RequestMethod;

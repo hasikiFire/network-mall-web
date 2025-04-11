@@ -1,4 +1,5 @@
 import { UserInfoRespDto } from '@/interface';
+import { delCookie, setCookie } from '@/lib/cookie';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -21,11 +22,13 @@ export const useAuthStore = create<State & Actions>()(
     (set) => ({
       user: undefined,
       isLogin: false,
-      login: (token: string) => {
+      login: async (token: string) => {
+        setCookie('token', token);
         localStorage.setItem('token', token ?? ''); // 使用 localStorage
         set(() => ({ isLogin: true }));
       },
-      logout: () => {
+      logout: async () => {
+        delCookie('token');
         localStorage.removeItem('token'); // 使用 localStorage
         set(() => ({ user: undefined, isLogin: false }));
       },
