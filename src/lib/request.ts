@@ -4,6 +4,7 @@ import axios, {
   AxiosError,
   AxiosRequestHeaders
 } from 'axios';
+import { redirect } from 'next/navigation';
 import { toast } from 'sonner';
 const isServer = typeof window === 'undefined';
 
@@ -98,4 +99,13 @@ type RequestMethod = <T = any>(
   }
 ) => Promise<T>;
 
-export const request = instance.request as RequestMethod;
+const _request = instance.request as RequestMethod;
+export const request = <T>(config: any): Promise<T> => {
+  return _request<T>(config).catch((error) => {
+    if (error.code === 401) {
+      redirect('/login');
+    }
+    // 其他错误继续抛出（可选）
+    return Promise.reject(error);
+  });
+};

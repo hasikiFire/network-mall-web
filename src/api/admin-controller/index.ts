@@ -50,10 +50,6 @@ export function getAdminUserGetList(params: GetAdminUserGetListParams) {
     params: {
       ...params
     }
-  }).catch((e) => {
-    if (e.code === 401) {
-      redirect('/login');
-    }
   });
 }
 
@@ -171,10 +167,6 @@ export function getAdminUsageRecordGetList(
     method: 'GET',
     params: params,
     ...config
-  }).catch((e) => {
-    if (e.code === 401) {
-      redirect('/login');
-    }
   });
 }
 
