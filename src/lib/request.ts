@@ -5,9 +5,9 @@ import axios, {
   AxiosRequestHeaders
 } from 'axios';
 import { toast } from 'sonner';
-
 const isServer = typeof window === 'undefined';
 
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 // 创建统一实例
 const instance = axios.create({
   timeout: 30 * 1000
@@ -29,13 +29,10 @@ const getServerToken = async () => {
     return;
   }
 };
-
-const handleInvalidToken = () => {
-  if (!isServer) {
-    toast.error('登录信息过期，请重新登录');
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  }
+const handleInvalidToken = async () => {
+  toast.error('登录信息过期，请重新登录');
+  localStorage.removeItem('token');
+  window.location.href = '/login';
 };
 
 // 请求拦截器
@@ -51,7 +48,7 @@ instance.interceptors.request.use(async (config) => {
     'access-token': `${token}`
   } as unknown as AxiosRequestHeaders;
 
-  config.url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${config.url}`;
+  config.url = `${baseUrl}${config.url}`;
   return config;
 });
 
@@ -71,11 +68,12 @@ instance.interceptors.response.use(
 
     // 只在客户端显示提示
     if (!isServer) {
-      toast.error(errorMessage);
-
       if (data.code === 401) {
         handleInvalidToken();
+      } else {
+        toast.error(errorMessage);
       }
+      return;
     }
 
     return Promise.reject(data);

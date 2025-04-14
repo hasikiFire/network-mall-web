@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import GlobalErrorHandler from '@/components/GlobalErrorBoundary';
 import './globals.css';
 import '@/style/base.css';
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default async function RootLayout({
       suppressHydrationWarning={true}
     >
       <body>
+        <GlobalErrorHandler />
         <NuqsAdapter>
           <NextTopLoader showSpinner={false} />
           <Providers session={session}>

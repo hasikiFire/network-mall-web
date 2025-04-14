@@ -1,7 +1,7 @@
 // https://juejin.cn/post/6844903933320790024#heading-8
 
-export function setCookie(name: string, value: string) {
-  document.cookie = name + '=' + value;
+export function setCookie(name: string, value: string, time: string) {
+  document.cookie = `${name}=${value}; expires=${time}; path=/`;
 }
 
 export function getCookie(name: string) {

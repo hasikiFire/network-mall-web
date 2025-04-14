@@ -23,7 +23,9 @@ export const useAuthStore = create<State & Actions>()(
       user: undefined,
       isLogin: false,
       login: async (token: string) => {
-        setCookie('token', token);
+        const expires = new Date();
+        expires.setMonth(expires.getMonth() + 1); // 当前时间 + 1 个月
+        setCookie('token', token, expires.toUTCString());
         localStorage.setItem('token', token ?? ''); // 使用 localStorage
         set(() => ({ isLogin: true }));
       },

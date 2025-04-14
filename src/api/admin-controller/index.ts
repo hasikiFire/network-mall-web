@@ -21,6 +21,7 @@ import {
 } from '@/interface';
 import { AxiosRequestConfig } from 'axios';
 import { request } from '@/lib/request';
+import { redirect } from 'next/navigation';
 
 /**
  * 获取所有套餐列表
@@ -48,6 +49,10 @@ export function getAdminUserGetList(params: GetAdminUserGetListParams) {
     method: 'GET',
     params: {
       ...params
+    }
+  }).catch((e) => {
+    if (e.code === 401) {
+      redirect('/login');
     }
   });
 }
@@ -166,6 +171,10 @@ export function getAdminUsageRecordGetList(
     method: 'GET',
     params: params,
     ...config
+  }).catch((e) => {
+    if (e.code === 401) {
+      redirect('/login');
+    }
   });
 }
 

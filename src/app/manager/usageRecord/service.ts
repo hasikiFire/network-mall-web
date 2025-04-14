@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 class Service {
   async getAllUsageRecordList(params: UsageRecordListReqDto) {
     const res = await getAdminUsageRecordGetList(params);
-    if (res.code !== 200 || !res.data?.list.length) return;
+    if (res?.code !== 200 || !res.data?.list.length) return;
 
     res.data.list = res.data.list.map((item) => {
       return {
