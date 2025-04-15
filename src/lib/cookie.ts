@@ -1,7 +1,11 @@
 // https://juejin.cn/post/6844903933320790024#heading-8
 
-export function setCookie(name: string, value: string, time: string) {
-  document.cookie = `${name}=${value}; expires=${time}; path=/`;
+export function setCookie(name: string, value: string, time?: string) {
+  if (time) {
+    document.cookie = `${name}=${value}; expires=${time}; path=/`;
+  } else {
+    document.cookie = name + '=' + value;
+  }
 }
 
 export function getCookie(name: string) {
