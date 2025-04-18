@@ -150,7 +150,7 @@ export default function UserAuthForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel required>密码</FormLabel>
+                <FormLabel required>新密码</FormLabel>
                 <FormControl>
                   <div className="flex">
                     <Input

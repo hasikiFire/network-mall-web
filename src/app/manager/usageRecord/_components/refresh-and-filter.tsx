@@ -47,7 +47,7 @@ export const RefreshAndFilter = ({
           <SelectValue placeholder="自动刷新" />
         </SelectTrigger>
         <SelectContent side="top">
-          <SelectItem value="0">关闭</SelectItem>
+          <SelectItem value="0">关闭间隔</SelectItem>
           <SelectItem value="5">5s</SelectItem>
           <SelectItem value="10">10s</SelectItem>
           <SelectItem value="30">30s</SelectItem>

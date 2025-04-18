@@ -4,10 +4,11 @@ import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import GlobalErrorHandler from '@/components/GlobalErrorBoundary';
+import { NuqsAdapter } from 'nuqs/adapters/next/app'; 
 import './globals.css';
 import '@/style/base.css';
+import { DialogProvider } from '@/components/dialog/dialog-provider';
+import { ReactNode } from 'react';
 export const metadata: Metadata = {
   title: 'Next Shadcn',
   description: 'Basic dashboard with Next.js and Shadcn'
@@ -32,15 +33,22 @@ export default async function RootLayout({
       suppressHydrationWarning={true}
     >
       <body>
-        <GlobalErrorHandler />
         <NuqsAdapter>
-          <NextTopLoader showSpinner={false} />
-          <Providers session={session}>
-            <Toaster />
-            {children}
-          </Providers>
+          <UIProviders>
+            <Providers session={session}>{children} </Providers>
+          </UIProviders>
         </NuqsAdapter>
       </body>
     </html>
   );
 }
+
+const UIProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
+  return (
+    <NuqsAdapter>
+      <NextTopLoader showSpinner={false} />
+      <Toaster />
+      <DialogProvider>{children}</DialogProvider>
+    </NuqsAdapter>
+  );
+};

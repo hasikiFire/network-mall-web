@@ -1,9 +1,10 @@
 import {
   getAdminUserGetList,
   GetAdminUserGetListParams,
-  postAdminUserUpdate
+  postAdminUserUpdate,
+  postAdminUserUpdateStatus
 } from '@/api';
-import { UserEditDto } from '@/interface';
+import { UserEditDto, UserEditStatusDto } from '@/interface';
 import dayjs from 'dayjs';
 
 class Service {
@@ -19,6 +20,11 @@ class Service {
       };
     });
     return res.data;
+  }
+
+  async adminUserUpdateStatus(params: UserEditStatusDto) {
+    const res = await postAdminUserUpdateStatus(params);
+    if (res.code !== 200) return res.data;
   }
 
   async adminUserUpdate(params: UserEditDto) {

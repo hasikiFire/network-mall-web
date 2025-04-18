@@ -17,7 +17,8 @@ import {
   RestRespPageRespDtoPayOrder,
   RestRespPageRespDtoUsageRecordListRespDto,
   UsageRecordEditReqDto,
-  UsageRecordListReqDto
+  UsageRecordListReqDto,
+  UserEditStatusDto
 } from '@/interface';
 import { AxiosRequestConfig } from 'axios';
 import { request } from '@/lib/request';
@@ -104,7 +105,17 @@ export function postAdminUserUpdate(input: UserEditDto) {
     data: input
   });
 }
-
+/**
+ * 编辑用户
+ * /admin/user/update
+ */
+export function postAdminUserUpdateStatus(input: UserEditStatusDto) {
+  return request<DeepRequired<RestRespUser>>({
+    url: `/admin/user/updateUserStatus`,
+    method: 'POST',
+    data: input
+  });
+}
 /**
  * 编辑套餐
  * /admin/pacakge/edit

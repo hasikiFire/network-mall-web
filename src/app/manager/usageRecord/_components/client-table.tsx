@@ -114,7 +114,7 @@ const columns: ColumnDef<UsageRecordListRespDto>[] = [
     }
   }
 ];
- export function ClientTableSkeleton() {
+export function ClientTableSkeleton() {
   return (
     <div className="space-y-4">
       <div className="h-12 animate-pulse rounded bg-gray-100" />
@@ -168,11 +168,17 @@ export function ClientTable({
   }
 
   return (
-    <DataTable
-      columns={columns}
-      data={data.list ?? []}
-      totalItems={0}
-      loading={isLoading}
-    />
+    <>
+      <RefreshAndFilter
+        onRefresh={handleRefresh}
+        onFilterChange={handleFilterChange}
+      />
+      <DataTable
+        columns={columns}
+        data={data.list ?? []}
+        totalItems={0}
+        loading={isLoading}
+      />
+    </>
   );
 }

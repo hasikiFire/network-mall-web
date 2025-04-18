@@ -3,14 +3,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Space } from 'lucide-react';
 import { DataTable } from '@/components/ui/table/data-table';
 import { toast } from 'sonner';
 import service from '../service';
-import { PageRespDtoUserListRespDto, UserListRespDto } from '@/interface';
+import {
+  PageRespDtoUserListRespDto,
+  UserEditDto,
+  UserListRespDto
+} from '@/interface';
 import { GetAdminUserGetListParams } from '@/api';
 import { ColumnDef } from '@tanstack/react-table';
 import { StatusTag } from '@/components/status-tag';
+import { UserEditModal } from './user-edit-modal';
+import { useDialog } from '@/components/dialog/dialog-provider';
+import { useAlert } from '@/lib/dialog';
 
 const statusMap: Record<number, string> = {
   0: '已禁用',
@@ -27,6 +33,7 @@ const statusStylesConfig: Record<number, string> = {
 interface UserTableProps {
   initialData?: PageRespDtoUserListRespDto;
 }
+
 export function ClientTableSkeleton() {
   return (
     <div className="space-y-4">
@@ -47,7 +54,9 @@ export function ClientTable({ initialData }: UserTableProps) {
     pageSize: 20
   });
   const [loading, setLoading] = useState(false);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editUserData, setEditUserData] = useState<UserEditDto | undefined>();
+  const { confirm } = useAlert();
   // 客户端数据更新
   const fetchUsers = async () => {
     setLoading(true);
@@ -69,23 +78,39 @@ export function ClientTable({ initialData }: UserTableProps) {
   }, [params.pageNum, params.pageSize]);
 
   const handleDisable = async (userId: number) => {
-    try {
-      await service.adminUserUpdate({ userId, status: 0 });
-      toast.success('用户已禁用');
-      fetchUsers();
-    } catch (error) {
-      toast.error('禁用用户失败');
-    }
+    confirm({ title: '确认禁用该用户？' }).then(async (isConfirm) => {
+      if (!isConfirm) return;
+      try {
+        await service.adminUserUpdate({ userId, status: 0 });
+        toast.success('用户已禁用');
+        fetchUsers();
+      } catch (error) {
+        toast.error('禁用用户失败');
+      }
+    });
   };
 
   const handleDelete = async (userId: number) => {
-    try {
-      await service.adminUserUpdate({ userId, status: 2 });
-      toast.success('用户已删除');
-      fetchUsers();
-    } catch (error) {
-      toast.error('删除用户失败');
-    }
+    confirm({ title: '确认禁用该用户？' }).then(async (isConfirm) => {
+      if (!isConfirm) return;
+      try {
+        await service.adminUserUpdate({ userId, status: 2 });
+        toast.success('用户已删除');
+        fetchUsers();
+      } catch (error) {
+        toast.error('删除用户失败');
+      }
+    });
+  };
+
+  const handleSave = async (userData: UserEditDto) => {
+    await service.adminUserUpdate({
+      ...userData,
+      userId: editUserData?.userId
+    });
+    toast.success('用户信息已更新');
+    setIsEditModalOpen(false);
+    fetchUsers();
   };
 
   // 分页控制
@@ -95,6 +120,18 @@ export function ClientTable({ initialData }: UserTableProps) {
       pageNum: page,
       pageSize
     }));
+  };
+
+  const handleEdit = (userData: UserListRespDto) => {
+    setEditUserData(userData);
+    setIsEditModalOpen(true);
+  };
+
+  const opOpenChange = (open: boolean) => {
+    setIsEditModalOpen(open);
+    if (!open) {
+      setEditUserData(undefined);
+    }
   };
 
   const columns: ColumnDef<UserListRespDto>[] = [
@@ -132,32 +169,49 @@ export function ClientTable({ initialData }: UserTableProps) {
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
-            variant="destructive"
+            variant="default"
             size="sm"
-            onClick={() => handleDisable(row.original.userId)}
-            disabled={row.original.status === 0}
+            onClick={() => handleEdit(row.original)}
           >
-            禁用
+            编辑
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleDelete(row.original.userId)}
-            disabled={row.original.status === 2}
-          >
-            删除
-          </Button>
+          {row.original.status === 1 && (
+            <>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleDisable(row.original.userId)}
+              >
+                禁用
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDelete(row.original.userId)}
+              >
+                删除
+              </Button>
+            </>
+          )}
         </div>
       )
     }
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={data?.list || []}
-      totalItems={data?.total || 0}
-      loading={loading}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={data?.list || []}
+        totalItems={data?.total || 0}
+        loading={loading}
+      />
+      <UserEditModal
+        isOpen={isEditModalOpen}
+        onOpenChange={opOpenChange}
+        userData={editUserData}
+        onSave={handleSave}
+      />
+    </>
   );
 }
