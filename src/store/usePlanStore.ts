@@ -1,6 +1,5 @@
 import { IOption } from '@/types';
-import { create, createStore } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from 'zustand';
 import { getPackageGetList } from '@/api';
 
 export type Actions = {

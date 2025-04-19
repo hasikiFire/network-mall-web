@@ -22,20 +22,16 @@ import {
 } from '@/interface';
 import { AxiosRequestConfig } from 'axios';
 import { request } from '@/lib/request';
-import { redirect } from 'next/navigation';
-
 /**
  * 获取所有套餐列表
  * /admin/pacakge/getAlllist
  */
-export function getAdminPacakgeGetAlllist(
-  params: GetAdminPacakgeGetAlllistParams
-) {
+export function getAdminPacakgeGetAlllist(params: PackageListReqDto) {
   return request<DeepRequired<RestRespPageRespDtoPackageListRespDto>>({
     url: `/admin/pacakge/getAlllist`,
     method: 'GET',
     params: {
-      ...params.params
+      ...params
     }
   });
 }

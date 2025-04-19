@@ -54,8 +54,8 @@ export function ClientTable({ initialData }: UserTableProps) {
     pageSize: 20
   });
   const [loading, setLoading] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editUserData, setEditUserData] = useState<UserEditDto | undefined>();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { confirm } = useAlert();
   // 客户端数据更新
   const fetchUsers = async () => {

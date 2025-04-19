@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 
 type DialogOptions = {
@@ -27,21 +27,21 @@ const DialogContext = createContext<DialogContextType | null>(null);
 export function DialogProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<DialogOptions>({ title: '' });
-  const [resolvePromise, setResolvePromise] =
-    useState<(value: boolean) => void>();
+  const resolveRef = useRef<(value: boolean) => void>(); // 替代 useState
 
   const openDialog = (options: DialogOptions): Promise<boolean> => {
     setOptions(options);
     setOpen(true);
 
     return new Promise((resolve) => {
-      setResolvePromise(() => resolve);
+      resolveRef.current = resolve;
     });
   };
 
   const handleClose = (confirmed: boolean) => {
     setOpen(false);
-    resolvePromise?.(confirmed);
+    resolveRef.current?.(confirmed);
+    resolveRef.current = undefined;
   };
 
   return (

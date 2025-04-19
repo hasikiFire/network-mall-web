@@ -135,7 +135,8 @@ export function ClientTable({
   >(initialData);
   const [params, setParams] = useState<UsageRecordListReqDto>({
     pageNum: 1,
-    pageSize: 20
+    pageSize: 20,
+    purchaseStatus: 1
   });
   const [isLoading, setIsLoading] = useState(false);
 

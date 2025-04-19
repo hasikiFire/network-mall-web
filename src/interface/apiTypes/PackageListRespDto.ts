@@ -1,6 +1,6 @@
 export interface PackageListRespDto {
   /** 主键 */
-  id?: number;
+  id: number;
   /** 套餐主键 */
   packageId?: number;
   /** 套餐名称 */

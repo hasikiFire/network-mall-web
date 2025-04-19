@@ -11,7 +11,7 @@ export default async function HomePage() {
     <div className="home-bg-primary flex min-h-screen flex-col">
       <Header />
       <Suspense fallback={<Loading />}>
-        <PlanCard planList={planList} />
+        <PlanCard planList={planList} home />
       </Suspense>
     </div>
   );

@@ -29,12 +29,14 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
   useEffect(() => {
     init();
-  }, [initialPlanList]);
+  }, []);
 
   const init = async () => {
-    if (initialPlanList?.length) {
+    if (home && initialPlanList) {
       usePlanStore.getState().initializePlanList(initialPlanList);
-    } else if (planList?.length === 0) {
+      return;
+    }
+    if (planList?.length === 0) {
       const planList = await fetchPlanList();
       usePlanStore.getState().initializePlanList(planList);
     }
