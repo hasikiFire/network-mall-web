@@ -1,5 +1,5 @@
-import { getAdminPacakgeGetAlllist } from '@/api';
-import { PackageListReqDto } from '@/interface';
+import { getAdminPacakgeGetAlllist, putAdminPacakgeEdit } from '@/api';
+import { PackageEditReqDto, PackageListReqDto } from '@/interface';
 import { bToGB } from '@/lib/format';
 import dayjs from 'dayjs';
 
@@ -17,6 +17,10 @@ class Service {
       };
     });
     return res.data;
+  }
+ 
+  async adminPacakgeEdit(input: PackageEditReqDto) {
+    return await putAdminPacakgeEdit(input);
   }
 }
 export default new Service();

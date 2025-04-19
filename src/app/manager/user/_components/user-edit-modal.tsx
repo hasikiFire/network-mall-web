@@ -129,7 +129,9 @@ export function UserEditModal({
                 </FormItem>
               )}
             />
-            <Button type="submit">保存</Button>
+            <div className="flex justify-end">
+              <Button type="submit">保存</Button>
+            </div>
           </form>
         </Form>
       </DialogContent>

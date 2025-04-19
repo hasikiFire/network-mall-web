@@ -23,6 +23,8 @@ import { RefreshAndFilter } from './_components/refresh-and-filter';
 import Loading from '@/components/loading';
 import { ClientTableSkeleton } from '../usageRecord/_components/client-table';
 import { useAlert } from '@/lib/dialog';
+import { PackageEditModal } from './_components/package-edit-modal';
+import { toast } from 'sonner';
 
 export function PackageTableSkeleton() {
   return (
@@ -47,10 +49,10 @@ export default function PackageTable() {
   const { confirm } = useAlert();
 
   useEffect(() => {
-    getPackageList();
+    fetchList();
   }, [params]);
 
-  const getPackageList = async () => {
+  const fetchList = async () => {
     try {
       setIsLoading(true);
       const data = await service.getPacakgeGetlist(params);
@@ -61,7 +63,7 @@ export default function PackageTable() {
   };
 
   const handleRefresh = () => {
-    getPackageList();
+    fetchList();
   };
 
   const handleFilterChange = (filterValues: any) => {
@@ -71,8 +73,19 @@ export default function PackageTable() {
     setEditData(data);
     setIsEditModalOpen(true);
   };
+  const handleSave = async (data: PackageListRespDto) => {
+    await service.adminPacakgeEdit({
+      ...data,
+      id: editData?.id || 0
+    });
+    toast.success('编辑成功');
+    setIsEditModalOpen(false);
+    fetchList();
+  };
 
-  const handleDisable = async (userId: number) => {};
+  const handleDisable = async (id: number) => {
+    // TODO
+  };
 
   const opOpenChange = (open: boolean) => {
     setIsEditModalOpen(open);
@@ -102,8 +115,8 @@ export default function PackageTable() {
       accessorKey: 'salePrice',
       header: '价格',
       cell: ({ row }) => {
-        const value = row.getValue('salePrice');
-        return value ? `¥${value}` : '-';
+        const value = row.getValue('salePrice') || 0;
+        return <span className="text-lg text-orange-600">￥{`${value}`} </span>;
       }
     },
     {
@@ -116,7 +129,7 @@ export default function PackageTable() {
     },
     {
       accessorKey: 'speedLimit',
-      header: '速率限制)',
+      header: '速率限制',
       cell: ({ row }) => {
         const value = row.getValue('speedLimit');
         return value ? `${value}MB/s` : '无限制';
@@ -160,7 +173,7 @@ export default function PackageTable() {
           >
             编辑
           </Button>
-          {row.original.packageStatus === 1 && (
+          {/* {row.original.packageStatus === 1 && (
             <>
               <Button
                 variant="destructive"
@@ -177,7 +190,7 @@ export default function PackageTable() {
                 删除
               </Button>
             </>
-          )}
+          )} */}
         </div>
       )
     }
@@ -188,7 +201,6 @@ export default function PackageTable() {
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">套餐管理</h1>
       </div>
-
       <Suspense fallback={<ClientTableSkeleton />}>
         <DataTable
           columns={columns}
@@ -196,7 +208,13 @@ export default function PackageTable() {
           totalItems={0}
           loading={isLoading}
         />
-      </Suspense>
+      </Suspense>{' '}
+      <PackageEditModal
+        isOpen={isEditModalOpen}
+        onOpenChange={opOpenChange}
+        editData={editData}
+        onSave={handleSave}
+      />
     </div>
   );
 }
