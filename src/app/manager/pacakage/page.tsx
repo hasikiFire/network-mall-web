@@ -1,41 +1,20 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import {
   PackageListRespDto,
   PackageListReqDto,
   PageRespDtoPackageListRespDto
 } from '@/interface';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuItem
-} from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { DataTable } from '@/components/ui/table/data-table';
 import service from './service';
 import { StatusTag } from '@/components/status-tag';
-import { RefreshAndFilter } from './_components/refresh-and-filter';
 import Loading from '@/components/loading';
 import { ClientTableSkeleton } from '../usageRecord/_components/client-table';
 import { useAlert } from '@/lib/dialog';
 import { PackageEditModal } from './_components/package-edit-modal';
 import { toast } from 'sonner';
-
-export function PackageTableSkeleton() {
-  return (
-    <div className="space-y-4">
-      <div className="h-12 animate-pulse rounded bg-gray-100" />
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="h-10 animate-pulse rounded bg-gray-50" />
-      ))}
-    </div>
-  );
-}
 
 export default function PackageTable() {
   const [data, setData] = useState<PageRespDtoPackageListRespDto | undefined>();
