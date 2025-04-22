@@ -18,7 +18,9 @@ import {
   RestRespPageRespDtoUsageRecordListRespDto,
   UsageRecordEditReqDto,
   UsageRecordListReqDto,
-  UserEditStatusDto
+  UserEditStatusDto,
+  RestRespRefundOrderRespDto,
+  RefundOrderReqDto
 } from '@/interface';
 import { AxiosRequestConfig } from 'axios';
 import { request } from '@/lib/request';
@@ -187,6 +189,22 @@ export function postAdminUsageRecordUpdate(
 ) {
   return request<DeepRequired<RestRespUsageRecord>>({
     url: '/admin/usageRecord/update',
+    method: 'POST',
+    data: input,
+    ...config
+  });
+}
+
+/**
+ * 申请退款
+ * /admin/payOrder/refund
+ */
+export function postAdminPayOrderRefund(
+  input: RefundOrderReqDto,
+  config?: AxiosRequestConfig
+) {
+  return request<DeepRequired<RestRespRefundOrderRespDto>>({
+    url: `/admin/payOrder/refund`,
     method: 'POST',
     data: input,
     ...config
